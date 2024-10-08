@@ -1,0 +1,5 @@
+Spring does indeed have a component scanning mechanism that scans your application's classes and automatically registers beans in the Spring container. This is a key feature of Spring's Inversion of Control (IoC) container.
+Let me elaborate on this:
+
+Component Scanning:
+Spring's component scanning is a feature that automatically detects and registers Spring beans without requiring explicit bean declarations in XML or Java configuration.

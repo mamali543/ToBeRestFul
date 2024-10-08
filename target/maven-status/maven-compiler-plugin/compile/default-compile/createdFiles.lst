@@ -1,0 +1,12 @@
+com/ader/RestApi/service/UserService.class
+com/ader/RestApi/service/UserServiceImpl.class
+com/ader/RestApi/controller/UserController.class
+com/ader/RestApi/pojo/Course.class
+com/ader/RestApi/RestApiApplication.class
+com/ader/RestApi/repositories/UserMapper.class
+com/ader/RestApi/pojo/Role.class
+com/ader/RestApi/repositories/UserRepository.class
+com/ader/RestApi/pojo/Lesson.class
+com/ader/RestApi/repositories/UserRepositoryJdbcImpl.class
+com/ader/RestApi/repositories/CrudRepository.class
+com/ader/RestApi/pojo/User.class
