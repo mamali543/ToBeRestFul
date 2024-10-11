@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class Course {
+    private Long courseId;
     private LocalDate startDate;
     private LocalDate endDate;
     private String name;
@@ -54,6 +55,14 @@ public class Course {
     public List<User> getTeachers() {
         return teachers;
     }
+
+    public Long getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
+    }   
 
     public void setTeachers(List<User> teachers) {
         this.teachers = teachers;

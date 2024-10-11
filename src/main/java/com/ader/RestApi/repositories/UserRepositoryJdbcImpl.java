@@ -1,12 +1,14 @@
 package com.ader.RestApi.repositories;
 
-import com.ader.RestApi.pojo.User;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
+import com.ader.RestApi.pojo.User;
 
 @Repository
 public class UserRepositoryJdbcImpl implements UserRepository {
@@ -21,26 +23,32 @@ public class UserRepositoryJdbcImpl implements UserRepository {
     @Override
     public Optional<User> findById(Long id) {
         String sql = "SELECT * FROM spring.users WHERE userId = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new Object[] {id}, new UserMapper()));
+        try {
+            User user = jdbcTemplate.queryForObject(sql, new UserMapper(), id);
+            return Optional.ofNullable(user);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public List<User> findAll(int page, int size) {
-        String sql = "SELECT * FROM spring.users LIMIT ? OFFSET ?";
+        String sql = "SELECT * FROM spring.users ORDER BY userId LIMIT ? OFFSET ?";
         return jdbcTemplate.query(sql, new UserMapper(), size, page * size);
     }
 
     @Override
     public User save(User entity) {
-        String sql = "INSERT INTO users (firstName, lastName, role, login, password) VALUES (?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, entity.getFirstName(), entity.getLastName(), entity.getRole().toString(), entity.getLogin(), entity.getPassword());
+        System.out.println(entity.toString());
+        String sql = "INSERT INTO spring.users (firstName, lastName, login, password, role) VALUES (?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, entity.getFirstName(), entity.getLastName(),  entity.getLogin(), entity.getPassword(), entity.getRole().ordinal());
         return entity;
     }
 
     @Override
     public User update(User entity) {
-        String sql = "UPDATE users SET firstName = ?, lastName = ?, role = ?, login = ?, password = ? WHERE userId = ?";
-        jdbcTemplate.update(sql, entity.getFirstName(), entity.getLastName(), entity.getRole().toString(), entity.getLogin(), entity.getPassword(), entity.getId());
+        String sql = "UPDATE spring.users SET firstName = ?, lastName = ?, login = ?, password = ?, role = ? WHERE userId = ?";
+        jdbcTemplate.update(sql, entity.getFirstName(), entity.getLastName(), entity.getLogin(), entity.getPassword(), entity.getRole().ordinal(), entity.getId());
         return  entity;
     }
 

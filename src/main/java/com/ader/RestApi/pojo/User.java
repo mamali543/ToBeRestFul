@@ -1,7 +1,8 @@
 package com.ader.RestApi.pojo;
 
-import com.ader.RestApi.pojo.Role;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+@JsonPropertyOrder({ "id", "firstName", "lastName", "login", "password", "role" })
 public class User {
     private Long userId;
     private String firstName;
