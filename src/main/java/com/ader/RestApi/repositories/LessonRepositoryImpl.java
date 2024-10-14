@@ -33,7 +33,7 @@ public class LessonRepositoryImpl implements LessonRepository {
     @Override
     public Optional<Lesson> findById(Long id) {
         String sql = "SELECT l.lessonId, l.startTime, l.endTime, l.dayOfWeek, " +
-                        "u.userId as teacherId, u.firstName, u.lastName " +
+                        "u.userId as teacherId, u.firstName, u.lastName , u.login, u.password, u.role " +
                         "FROM spring.lessons l " +
                         "JOIN spring.users u ON u.userId = l.teacherId " +
                         "WHERE l.lessonId = ?";

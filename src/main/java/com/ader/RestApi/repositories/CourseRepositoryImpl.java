@@ -29,7 +29,7 @@ public class CourseRepositoryImpl implements CourseRepository {
     @Override
     public List<Course> findAll(int page, int size) {
         String sql = "SELECT * FROM spring.courses ORDER BY courseId LIMIT ? OFFSET ?";
-        return jdbcTemplate.query(sql, new CourseMapper(), size, (page - 1) * size);
+        return jdbcTemplate.query(sql, new CourseMapper(), size, page * size);
     }
 
     @Override

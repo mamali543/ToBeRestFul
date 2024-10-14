@@ -17,7 +17,8 @@ public class Course {
 
     }
 
-    public Course(LocalDate startDate, LocalDate endDate, String name, List<User> teachers, List<User> students, String description, List<Lesson> lessons) {
+    public Course(Long courseId, LocalDate startDate, LocalDate endDate, String name, List<User> teachers, List<User> students, String description, List<Lesson> lessons) {
+        this.courseId = courseId;
         this.startDate = startDate;
         this.endDate = endDate;
         this.name = name;
