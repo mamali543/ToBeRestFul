@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ader.RestApi.dto.LessonDto;
 import com.ader.RestApi.pojo.Course;
+import com.ader.RestApi.pojo.Lesson;
 import com.ader.RestApi.service.CourseService;
 
 @RestController
@@ -58,9 +60,14 @@ public class CourseController {
         return ResponseEntity.noContent().build();
     }
 
-    // @PostMapping("/{courseId}/lessons")
-    // public ResponseEntity<Lesson> addLessonToCourse(@PathVariable Long courseId, @RequestBody Lesson lesson) {
-    //     return ResponseEntity.ok(courseService.addLessonToCourse(courseId, lesson));
-    // }
+    @PostMapping("/{courseId}/lessons")
+    public ResponseEntity<Lesson> addLessonToCourse(@PathVariable Long courseId, @RequestBody LessonDto lessonDto) {
+        return ResponseEntity.ok(courseService.addLessonToCourse(courseId, lessonDto));
+    }
+
+    @GetMapping("/{courseId}/lessons")
+    public ResponseEntity<List<Lesson>> getLessonsByCourseId(@PathVariable Long courseId) {
+        return ResponseEntity.ok(courseService.getLessonsByCourseId(courseId));
+    }
     
 }

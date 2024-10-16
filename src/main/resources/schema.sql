@@ -13,16 +13,6 @@ CREATE TABLE IF NOT EXISTS spring.users (
     role INT
 );
 
--- Create lesson table
-CREATE TABLE IF NOT EXISTS spring.lessons (
-    lessonId SERIAL PRIMARY KEY,
-    startTime TIME NOT NULL,
-    endTime TIME NOT NULL,
-    dayOfWeek VARCHAR(50) NOT NULL,
-    teacherId BIGINT NOT NULL,
-    FOREIGN KEY (teacherId) REFERENCES spring.users(userId)
-);
-
 CREATE TABLE IF NOT EXISTS spring.courses (
     courseId SERIAL PRIMARY KEY,
     startDate DATE NOT NULL,
@@ -30,4 +20,17 @@ CREATE TABLE IF NOT EXISTS spring.courses (
     name VARCHAR(255) NOT NULL,
     description TEXT
 );
+
+-- Create lesson table
+CREATE TABLE IF NOT EXISTS spring.lessons (
+    lessonId SERIAL PRIMARY KEY,
+    startTime TIME NOT NULL,
+    endTime TIME NOT NULL,
+    dayOfWeek VARCHAR(50) NOT NULL,
+    teacherId BIGINT NOT NULL,
+    courseId BIGINT NOT NULL,
+    FOREIGN KEY (courseId) REFERENCES spring.courses(courseId),
+    FOREIGN KEY (teacherId) REFERENCES spring.users(userId)
+);
+
 

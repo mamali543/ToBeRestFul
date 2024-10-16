@@ -52,8 +52,18 @@ public class LessonRepositoryImpl implements LessonRepository {
     }
 
     @Override
-    public Lesson saveDto(LessonDto entity) {
-        String sql = "INSERT INTO spring.lessons (startTime, endTime, dayOfWeek, teacherId) VALUES (?, ?, ?, ?)";
+    public List<Lesson> findByCourseId(Long courseId) {
+        String sql = "SELECT l.lessonId, l.startTime, l.endTime, l.dayOfWeek, " +
+                        "u.userId as teacherId, u.firstName, u.lastName , u.login, u.password, u.role " +
+                        "FROM spring.lessons l " +
+                        "JOIN spring.users u ON u.userId = l.teacherId " +
+                        "WHERE l.courseId = ? ";
+        return jdbcTemplate.query(sql, new LessonMapper(), courseId);
+    }
+
+    @Override
+    public Lesson saveDto(LessonDto entity, Long courseId) {
+        String sql = "INSERT INTO spring.lessons (startTime, endTime, dayOfWeek, teacherId, courseId) VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"lessonid"});
@@ -61,6 +71,7 @@ public class LessonRepositoryImpl implements LessonRepository {
             ps.setTime(2, Time.valueOf(entity.getEndTime()));
             ps.setString(3, entity.getDayOfWeek());
             ps.setLong(4, entity.getTeacherId());
+            ps.setLong(5, courseId);
             return ps;
         }, keyHolder);
 
@@ -102,4 +113,6 @@ public class LessonRepositoryImpl implements LessonRepository {
         jdbcTemplate.update(sql, entity.getStartTime(), entity.getEndTime(), entity.getDayOfWeek(), entity.getTeacher().getId());
         return entity;
     }
+
+
 }

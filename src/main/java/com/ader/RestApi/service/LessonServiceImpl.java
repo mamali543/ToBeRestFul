@@ -25,10 +25,10 @@ public class LessonServiceImpl implements LessonService {
         return lessonRepository.findAll(page, size);
     }
 
-    @Override
-    public Lesson createLesson(LessonDto lessonDto) {
-        return lessonRepository.saveDto(lessonDto);
-    }
+    // @Override
+    // public Lesson createLesson(LessonDto lessonDto) {
+    //     return lessonRepository.saveDto(lessonDto);
+    // }
 
     @Override
     public Optional<Lesson> getLessonById(Long id) {
