@@ -62,7 +62,7 @@ public class LessonRepositoryImpl implements LessonRepository {
     }
 
     @Override
-    public Lesson saveDto(LessonDto entity, Long courseId) {
+    public Lesson saveDto(LessonDto entity) {
         String sql = "INSERT INTO spring.lessons (startTime, endTime, dayOfWeek, teacherId, courseId) VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -71,7 +71,7 @@ public class LessonRepositoryImpl implements LessonRepository {
             ps.setTime(2, Time.valueOf(entity.getEndTime()));
             ps.setString(3, entity.getDayOfWeek());
             ps.setLong(4, entity.getTeacherId());
-            ps.setLong(5, courseId);
+            ps.setLong(5, entity.getCourseId());
             return ps;
         }, keyHolder);
 
@@ -80,6 +80,23 @@ public class LessonRepositoryImpl implements LessonRepository {
 
         Lesson lesson = new Lesson(
             keyHolder.getKey().longValue(),
+            LocalTime.parse(entity.getStartTime()),
+            LocalTime.parse(entity.getEndTime()),
+            entity.getDayOfWeek(),
+            teacher
+        );
+        return lesson;
+    }
+
+    @Override
+    public Lesson updateDto(LessonDto entity, Long lessonId) {
+        System.out.println(entity.toString());
+        String sql = "UPDATE spring.lessons SET startTime = ?, endTime = ?, dayOfWeek = ?, teacherId = ?, courseId = ? WHERE lessonId = ?";
+        jdbcTemplate.update(sql, Time.valueOf(entity.getStartTime()), Time.valueOf(entity.getEndTime()), entity.getDayOfWeek(), entity.getTeacherId(), entity.getCourseId(), lessonId);
+        Optional<User> user = userRepository.findById(entity.getTeacherId());
+        User teacher = user.get();
+        Lesson lesson = new Lesson(
+            lessonId,
             LocalTime.parse(entity.getStartTime()),
             LocalTime.parse(entity.getEndTime()),
             entity.getDayOfWeek(),

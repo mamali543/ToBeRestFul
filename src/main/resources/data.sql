@@ -13,4 +13,13 @@ INSERT INTO spring.lessons (startTime, endTime, dayOfWeek, teacherId, courseId) 
 ('09:00:00', '10:30:00', 'Monday', 1, 1),
 ('11:00:00', '12:30:00', 'Tuesday', 2, 2);
 
+-- Insert sample course_students
+INSERT INTO spring.course_students (courseId, studentId) VALUES
+(1, 2),
+(2, 1);
+
+-- Insert sample course_teachers
+INSERT INTO spring.course_teachers (courseId, teacherId) VALUES
+(1, 1),
+(2, 2);
 

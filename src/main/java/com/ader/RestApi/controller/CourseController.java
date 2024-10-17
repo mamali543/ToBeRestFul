@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ader.RestApi.dto.LessonDto;
 import com.ader.RestApi.pojo.Course;
 import com.ader.RestApi.pojo.Lesson;
+import com.ader.RestApi.pojo.User;
 import com.ader.RestApi.service.CourseService;
 
 @RestController
@@ -62,7 +63,8 @@ public class CourseController {
 
     @PostMapping("/{courseId}/lessons")
     public ResponseEntity<Lesson> addLessonToCourse(@PathVariable Long courseId, @RequestBody LessonDto lessonDto) {
-        return ResponseEntity.ok(courseService.addLessonToCourse(courseId, lessonDto));
+        lessonDto.setCourseId(courseId);
+        return ResponseEntity.ok(courseService.addLessonToCourse(lessonDto));
     }
 
     @GetMapping("/{courseId}/lessons")
@@ -70,4 +72,48 @@ public class CourseController {
         return ResponseEntity.ok(courseService.getLessonsByCourseId(courseId));
     }
     
+    @PutMapping("/{courseId}/lessons/{lessonId}")
+    public ResponseEntity<Lesson> updateLessonByCourse(@PathVariable Long courseId, @PathVariable Long lessonId, @RequestBody LessonDto lessonDto) {
+        lessonDto.setCourseId(courseId);
+        return ResponseEntity.ok(courseService.updateLessonByCourse(lessonId, lessonDto));
+    }
+
+    @DeleteMapping("/{courseId}/lessons/{lessonId}")
+    public ResponseEntity<Void> deleteLessonByCourse(@PathVariable Long courseId, @PathVariable Long lessonId) {
+        courseService.deleteLessonByCourse(lessonId, courseId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{courseId}/students/{studentId}")
+    public ResponseEntity<User> addStudentToCourse(@PathVariable Long courseId, @PathVariable Long studentId) {
+        return ResponseEntity.ok(courseService.addStudentToCourse(studentId, courseId));
+    }
+
+    @GetMapping("/{courseId}/students")
+    public ResponseEntity<List<User>> getStudentsByCourseId(@PathVariable Long courseId) {
+        return ResponseEntity.ok(courseService.getStudentsByCourseId(courseId));
+    }
+
+    @DeleteMapping("/{courseId}/students/{studentId}")
+    public ResponseEntity<Void> deleteStudentFromCourse(@PathVariable Long courseId, @PathVariable Long studentId) {
+        courseService.deleteStudentFromCourse(studentId, courseId);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @PostMapping("/{courseId}/teachers/{teacherId}")
+    public ResponseEntity<User> addTeacherToCourse(@PathVariable Long courseId, @PathVariable Long teacherId) {
+        return ResponseEntity.ok(courseService.addTeacherToCourse(teacherId, courseId));
+    }
+
+    @GetMapping("/{courseId}/teachers")
+    public ResponseEntity<List<User>> getTeachersByCourseId(@PathVariable Long courseId) {
+        return ResponseEntity.ok(courseService.getTeachersByCourseId(courseId));
+    }
+
+    @DeleteMapping("/{courseId}/teachers/{teacherId}")
+    public ResponseEntity<Void> deleteTeacherFromCourse(@PathVariable Long courseId, @PathVariable Long teacherId) {
+        courseService.deleteTeacherFromCourse(teacherId, courseId);
+        return ResponseEntity.noContent().build();
+    }
 }

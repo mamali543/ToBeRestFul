@@ -33,4 +33,23 @@ CREATE TABLE IF NOT EXISTS spring.lessons (
     FOREIGN KEY (teacherId) REFERENCES spring.users(userId)
 );
 
+-- Existing tables (users, courses, lessons) remain the same
+
+-- Create junction table for course-student relationship
+CREATE TABLE IF NOT EXISTS spring.course_students (
+    courseId BIGINT NOT NULL,
+    studentId BIGINT NOT NULL,
+    PRIMARY KEY (courseId, studentId),
+    FOREIGN KEY (courseId) REFERENCES spring.courses(courseId),
+    FOREIGN KEY (studentId) REFERENCES spring.users(userId)
+);
+
+-- Create junction table for course-teacher relationship
+CREATE TABLE IF NOT EXISTS spring.course_teachers (
+    courseId BIGINT NOT NULL,
+    teacherId BIGINT NOT NULL,
+    PRIMARY KEY (courseId, teacherId),
+    FOREIGN KEY (courseId) REFERENCES spring.courses(courseId),
+    FOREIGN KEY (teacherId) REFERENCES spring.users(userId)
+);
 

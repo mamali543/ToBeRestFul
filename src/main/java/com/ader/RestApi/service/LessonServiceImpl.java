@@ -25,10 +25,10 @@ public class LessonServiceImpl implements LessonService {
         return lessonRepository.findAll(page, size);
     }
 
-    // @Override
-    // public Lesson createLesson(LessonDto lessonDto) {
-    //     return lessonRepository.saveDto(lessonDto);
-    // }
+    @Override
+    public Lesson createLesson(LessonDto lessonDto) {
+        return lessonRepository.saveDto(lessonDto);
+    }
 
     @Override
     public Optional<Lesson> getLessonById(Long id) {
@@ -36,8 +36,9 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public Lesson updateLesson(Lesson Lesson) {
-        return lessonRepository.update(Lesson);
+    public Lesson updateLesson(LessonDto lessonDto, Long lessonId) {
+        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new RuntimeException("Lesson with id " + lessonId + " not found"));
+        return lessonRepository.updateDto(lessonDto, lessonId);
     }
 
     @Override

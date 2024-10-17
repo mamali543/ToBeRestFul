@@ -1,5 +1,6 @@
 package com.ader.RestApi.service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -10,8 +11,10 @@ import org.springframework.stereotype.Service;
 import com.ader.RestApi.dto.LessonDto;
 import com.ader.RestApi.pojo.Course;
 import com.ader.RestApi.pojo.Lesson;
+import com.ader.RestApi.pojo.User;
 import com.ader.RestApi.repositories.CourseRepository;
 import com.ader.RestApi.repositories.LessonRepository;
+import com.ader.RestApi.repositories.UserRepository;
 
 @Service
 public class CourseServiceImpl implements CourseService {
@@ -20,11 +23,15 @@ public class CourseServiceImpl implements CourseService {
     private CourseRepository courseRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private LessonRepository lessonRepository;
 
-    public CourseServiceImpl(CourseRepository courseRepository, LessonRepository lessonRepository) {
+    public CourseServiceImpl(CourseRepository courseRepository, LessonRepository lessonRepository, UserRepository userRepository) {
         this.courseRepository = courseRepository;
         this.lessonRepository = lessonRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -58,10 +65,10 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Lesson addLessonToCourse(Long courseId, LessonDto lessonDto)
+    public Lesson addLessonToCourse(LessonDto lessonDto)
     {
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found"));
-        Lesson lesson = lessonRepository.saveDto(lessonDto, courseId);
+        Course course = courseRepository.findById(lessonDto.getCourseId()).orElseThrow(() -> new RuntimeException("Course not found"));
+        Lesson lesson = lessonRepository.saveDto(lessonDto);
         if (course.getLessons() == null) {
             course.setLessons(new ArrayList<>());
         }
@@ -73,5 +80,71 @@ public class CourseServiceImpl implements CourseService {
     public List<Lesson> getLessonsByCourseId(Long courseId) {
         return lessonRepository.findByCourseId(courseId);
     }
-    
+
+    @Override
+    public Lesson updateLessonByCourse(Long lessonId, LessonDto lessonDto) {
+        //verify if there's a course with this id!
+        Course course = courseRepository.findById(lessonDto.getCourseId()).orElseThrow(() -> new RuntimeException("Course not found"));
+         // Find the lesson
+        Lesson lessonToUpdate = lessonRepository.findById(lessonId)
+        .orElseThrow(() -> new RuntimeException("Lesson not found with id: " + lessonId));
+        // Update only non-null fields
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        if (lessonDto.getStartTime() == null) {
+            lessonDto.setStartTime(lessonToUpdate.getStartTime().format(formatter));   
+        }
+        if (lessonDto.getEndTime() == null) {
+            lessonDto.setEndTime(lessonToUpdate.getEndTime().format(formatter));
+        }
+        if (lessonDto.getDayOfWeek() == null) {
+            lessonDto.setDayOfWeek(lessonToUpdate.getDayOfWeek());
+        }
+        if (lessonDto.getTeacherId() == null) {
+            lessonDto.setTeacherId(lessonToUpdate.getTeacher().getId());
+        }
+        //update the lesson
+        return lessonRepository.updateDto(lessonDto, lessonId);
+    }
+
+    @Override
+    public void deleteLessonByCourse(Long lessonId, Long courseId) {
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Lesson not found"));
+        lessonRepository.delete(lessonId);
+    }
+
+    @Override
+    public User addStudentToCourse(Long studentId, Long courseId) {
+        User student = userRepository.findById(studentId).orElseThrow(() -> new RuntimeException("Student not found"));
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found"));
+        courseRepository.addStudentToCourse(studentId, courseId);
+        return student;
+    }
+
+    @Override
+    public List<User> getStudentsByCourseId(Long courseId) {
+        return courseRepository.getStudentsByCourseId(courseId);
+    }
+
+    @Override
+    public void deleteStudentFromCourse(Long studentId, Long courseId) {
+        courseRepository.deleteStudentFromCourse(studentId, courseId);
+    }
+
+    @Override
+    public User addTeacherToCourse(Long teacherId, Long courseId) {
+        User teacher = userRepository.findById(teacherId).orElseThrow(() -> new RuntimeException("Teacher not found"));
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found"));
+        courseRepository.addTeacherToCourse(teacherId, courseId);
+        return teacher;
+    }
+
+    @Override   
+    public List<User> getTeachersByCourseId(Long courseId) {
+        return courseRepository.getTeachersByCourseId(courseId);
+    }
+
+    @Override
+    public void deleteTeacherFromCourse(Long teacherId, Long courseId) {
+        courseRepository.deleteTeacherFromCourse(teacherId, courseId);
+    }
 }
