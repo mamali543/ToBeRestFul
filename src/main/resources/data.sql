@@ -22,4 +22,3 @@ INSERT INTO spring.course_students (courseId, studentId) VALUES
 INSERT INTO spring.course_teachers (courseId, teacherId) VALUES
 (1, 1),
 (2, 2);
-

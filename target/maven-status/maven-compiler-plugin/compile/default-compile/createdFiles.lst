@@ -11,6 +11,7 @@ com/ader/RestApi/service/LessonServiceImpl.class
 com/ader/RestApi/pojo/Lesson.class
 com/ader/RestApi/repositories/UserRepositoryJdbcImpl.class
 com/ader/RestApi/repositories/LessonRepositoryImpl.class
+com/ader/RestApi/exception/GlobalExceptionHandler.class
 com/ader/RestApi/repositories/CrudRepository.class
 com/ader/RestApi/pojo/User.class
 com/ader/RestApi/service/UserServiceImpl.class
@@ -22,4 +23,5 @@ com/ader/RestApi/controller/CourseController.class
 com/ader/RestApi/service/LessonService.class
 com/ader/RestApi/repositories/CourseRepositoryImpl.class
 com/ader/RestApi/controller/LessonController.class
+com/ader/RestApi/exception/BadRequestException.class
 com/ader/RestApi/repositories/CourseMapper.class

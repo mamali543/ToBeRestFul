@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ader.RestApi.dto.LessonDto;
+import com.ader.RestApi.exception.BadRequestException;
 import com.ader.RestApi.pojo.Course;
 import com.ader.RestApi.pojo.Lesson;
+import com.ader.RestApi.pojo.Role;
 import com.ader.RestApi.pojo.User;
 import com.ader.RestApi.repositories.CourseRepository;
 import com.ader.RestApi.repositories.LessonRepository;
@@ -67,7 +69,8 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Lesson addLessonToCourse(LessonDto lessonDto)
     {
-        Course course = courseRepository.findById(lessonDto.getCourseId()).orElseThrow(() -> new RuntimeException("Course not found"));
+        Course course = courseRepository.findById(lessonDto.getCourseId()).orElseThrow(() -> new BadRequestException("course not found"));
+        Lesson lesson1 = lessonRepository.findById(lessonDto.getLessonId()).orElseThrow(() -> new BadRequestException("lesson not found"));
         Lesson lesson = lessonRepository.saveDto(lessonDto);
         if (course.getLessons() == null) {
             course.setLessons(new ArrayList<>());
@@ -114,8 +117,11 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public User addStudentToCourse(Long studentId, Long courseId) {
-        User student = userRepository.findById(studentId).orElseThrow(() -> new RuntimeException("Student not found"));
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found"));
+        User student = userRepository.findById(studentId).orElseThrow(() -> new BadRequestException("Student not found"));
+        if (student.getRole() != Role.STUDENT) {
+            throw new BadRequestException("User is not a student");
+        }
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new BadRequestException("Course not found"));
         courseRepository.addStudentToCourse(studentId, courseId);
         return student;
     }
@@ -132,8 +138,11 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public User addTeacherToCourse(Long teacherId, Long courseId) {
-        User teacher = userRepository.findById(teacherId).orElseThrow(() -> new RuntimeException("Teacher not found"));
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found"));
+        User teacher = userRepository.findById(teacherId).orElseThrow(() -> new BadRequestException("Teacher not found"));
+        if (teacher.getRole() != Role.TEACHER) {
+            throw new BadRequestException("User is not a teacher");
+        }
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new BadRequestException("Course not found"));
         courseRepository.addTeacherToCourse(teacherId, courseId);
         return teacher;
     }

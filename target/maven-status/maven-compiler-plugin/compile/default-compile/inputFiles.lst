@@ -3,6 +3,8 @@
 /Users/m0saan/Desktop/ToBeRestFul/src/main/java/com/ader/RestApi/controller/LessonController.java
 /Users/m0saan/Desktop/ToBeRestFul/src/main/java/com/ader/RestApi/controller/UserController.java
 /Users/m0saan/Desktop/ToBeRestFul/src/main/java/com/ader/RestApi/dto/LessonDto.java
+/Users/m0saan/Desktop/ToBeRestFul/src/main/java/com/ader/RestApi/exception/BadRequestException.java
+/Users/m0saan/Desktop/ToBeRestFul/src/main/java/com/ader/RestApi/exception/GlobalExceptionHandler.java
 /Users/m0saan/Desktop/ToBeRestFul/src/main/java/com/ader/RestApi/pojo/Course.java
 /Users/m0saan/Desktop/ToBeRestFul/src/main/java/com/ader/RestApi/pojo/Lesson.java
 /Users/m0saan/Desktop/ToBeRestFul/src/main/java/com/ader/RestApi/pojo/Role.java
