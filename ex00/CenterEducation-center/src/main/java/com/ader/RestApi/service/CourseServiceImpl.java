@@ -70,7 +70,7 @@ public class CourseServiceImpl implements CourseService {
     public Lesson addLessonToCourse(LessonDto lessonDto)
     {
         Course course = courseRepository.findById(lessonDto.getCourseId()).orElseThrow(() -> new BadRequestException("course not found"));
-        Lesson lesson1 = lessonRepository.findById(lessonDto.getLessonId()).orElseThrow(() -> new BadRequestException("lesson not found"));
+        // Lesson lesson1 = lessonRepository.findById(lessonDto.getLessonId()).orElseThrow(() -> new BadRequestException("lesson not found"));
         Lesson lesson = lessonRepository.saveDto(lessonDto);
         if (course.getLessons() == null) {
             course.setLessons(new ArrayList<>());
