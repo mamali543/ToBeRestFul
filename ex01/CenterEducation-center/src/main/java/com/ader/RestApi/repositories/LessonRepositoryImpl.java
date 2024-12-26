@@ -32,42 +32,42 @@ public class LessonRepositoryImpl implements LessonRepository {
 
     @Override
     public Optional<Lesson> findById(Long id) {
-        String sql = "SELECT l.lessonId, l.startTime, l.endTime, l.dayOfWeek, " +
-                        "u.userId as teacherId, u.firstName, u.lastName , u.login, u.password, u.role " +
-                        "FROM spring.lessons l " +
-                        "JOIN spring.users u ON u.userId = l.teacherId " +
-                        "WHERE l.lessonId = ?";
-        return Optional.ofNullable( jdbcTemplate.queryForObject(sql, new LessonMapper(), id));
+        String sql = "SELECT l.lessonid, l.starttime, l.endTime, l.dayOfWeek, " +
+                "u.userId as teacherId, u.firstName, u.lastName , u.login, u.password, u.role " +
+                "FROM spring.lessons l " +
+                "JOIN spring.users u ON u.userId = l.teacherId " +
+                "WHERE l.lessonid = ?";
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new LessonMapper(), id));
     }
 
     @Override
     public List<Lesson> findAll(int page, int size) {
-        String sql = "SELECT l.lessonId, l.startTime, l.endTime, l.dayOfWeek, " +
-                        "u.userId as teacherId, u.firstName, u.lastName , u.login, u.password, u.role " +
-                        "FROM spring.lessons l " +
-                        "JOIN spring.users u ON u.userId = l.teacherId " +
-                        "ORDER BY l.lessonId " +
-                        "LIMIT ? OFFSET ?";
+        String sql = "SELECT l.lessonid, l.starttime, l.endTime, l.dayOfWeek, " +
+                "u.userId as teacherId, u.firstName, u.lastName , u.login, u.password, u.role " +
+                "FROM spring.lessons l " +
+                "JOIN spring.users u ON u.userId = l.teacherId " +
+                "ORDER BY l.lessonid " +
+                "LIMIT ? OFFSET ?";
         return jdbcTemplate.query(sql, new LessonMapper(), size, page * size);
     }
 
     @Override
     public List<Lesson> findByCourseId(Long courseId) {
-        String sql = "SELECT l.lessonId, l.startTime, l.endTime, l.dayOfWeek, " +
-                        "u.userId as teacherId, u.firstName, u.lastName , u.login, u.password, u.role " +
-                        "FROM spring.lessons l " +
-                        "JOIN spring.users u ON u.userId = l.teacherId " +
-                        "WHERE l.courseId = ? ";
+        String sql = "SELECT l.lessonid, l.starttime, l.endTime, l.dayOfWeek, " +
+                "u.userId as teacherId, u.firstName, u.lastName , u.login, u.password, u.role " +
+                "FROM spring.lessons l " +
+                "JOIN spring.users u ON u.userId = l.teacherId " +
+                "WHERE l.courseId = ? ";
         return jdbcTemplate.query(sql, new LessonMapper(), courseId);
     }
 
     @Override
     public Lesson saveDto(LessonDto entity) {
-        String sql = "INSERT INTO spring.lessons (startTime, endTime, dayOfWeek, teacherId, courseId) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO spring.lessons (starttime, endTime, dayOfWeek, teacherId, courseId) VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"lessonid"});
-            ps.setTime(1, Time.valueOf(entity.getStartTime()));
+            PreparedStatement ps = connection.prepareStatement(sql, new String[] { "lessonid" });
+            ps.setTime(1, Time.valueOf(entity.getstarttime()));
             ps.setTime(2, Time.valueOf(entity.getEndTime()));
             ps.setString(3, entity.getDayOfWeek());
             ps.setLong(4, entity.getTeacherId());
@@ -79,45 +79,45 @@ public class LessonRepositoryImpl implements LessonRepository {
         User teacher = user.get();
 
         Lesson lesson = new Lesson(
-            keyHolder.getKey().longValue(),
-            LocalTime.parse(entity.getStartTime()),
-            LocalTime.parse(entity.getEndTime()),
-            entity.getDayOfWeek(),
-            teacher
-        );
+                keyHolder.getKey().longValue(),
+                LocalTime.parse(entity.getstarttime()),
+                LocalTime.parse(entity.getEndTime()),
+                entity.getDayOfWeek(),
+                teacher);
         return lesson;
     }
 
     @Override
-    public Lesson updateDto(LessonDto entity, Long lessonId) {
+    public Lesson updateDto(LessonDto entity, Long lessonid) {
         System.out.println(entity.toString());
-        String sql = "UPDATE spring.lessons SET startTime = ?, endTime = ?, dayOfWeek = ?, teacherId = ?, courseId = ? WHERE lessonId = ?";
-        jdbcTemplate.update(sql, Time.valueOf(entity.getStartTime()), Time.valueOf(entity.getEndTime()), entity.getDayOfWeek(), entity.getTeacherId(), entity.getCourseId(), lessonId);
+        String sql = "UPDATE spring.lessons SET starttime = ?, endTime = ?, dayOfWeek = ?, teacherId = ?, courseId = ? WHERE lessonid = ?";
+        jdbcTemplate.update(sql, Time.valueOf(entity.getstarttime()), Time.valueOf(entity.getEndTime()),
+                entity.getDayOfWeek(), entity.getTeacherId(), entity.getCourseId(), lessonid);
         Optional<User> user = userRepository.findById(entity.getTeacherId());
         User teacher = user.get();
         Lesson lesson = new Lesson(
-            lessonId,
-            LocalTime.parse(entity.getStartTime()),
-            LocalTime.parse(entity.getEndTime()),
-            entity.getDayOfWeek(),
-            teacher
-        );
+                lessonid,
+                LocalTime.parse(entity.getstarttime()),
+                LocalTime.parse(entity.getEndTime()),
+                entity.getDayOfWeek(),
+                teacher);
         return lesson;
     }
 
     @Override
     public Lesson update(Lesson entity) {
-        String sql = "UPDATE spring.lessons SET startTime = ?, endTime = ?, dayOfWeek = ?, teacherId = ? WHERE lessonId = ?";
-        int rowsAffected = jdbcTemplate.update(sql, entity.getStartTime(), entity.getEndTime(), entity.getDayOfWeek(), entity.getTeacher().getId(), entity.getLessonId());
+        String sql = "UPDATE spring.lessons SET starttime = ?, endTime = ?, dayOfWeek = ?, teacherId = ? WHERE lessonid = ?";
+        int rowsAffected = jdbcTemplate.update(sql, entity.getstarttime(), entity.getEndTime(), entity.getDayOfWeek(),
+                entity.getTeacher().getId(), entity.getlessonid());
         if (rowsAffected == 0) {
-            throw new RuntimeException("Lesson with id " + entity.getLessonId() + " not found");
+            throw new RuntimeException("Lesson with id " + entity.getlessonid() + " not found");
         }
         return entity;
     }
 
     @Override
     public void delete(Long id) {
-        String sql = "DELETE FROM spring.lessons WHERE lessonId = ?";
+        String sql = "DELETE FROM spring.lessons WHERE lessonid = ?";
         int rowsAffected = jdbcTemplate.update(sql, id);
         if (rowsAffected == 0) {
             throw new RuntimeException("Lesson with id " + id + " not found");
@@ -126,10 +126,10 @@ public class LessonRepositoryImpl implements LessonRepository {
 
     @Override
     public Lesson save(Lesson entity) {
-        String sql = "INSERT INTO spring.lessons (startTime, endTime, dayOfWeek, teacherId) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, entity.getStartTime(), entity.getEndTime(), entity.getDayOfWeek(), entity.getTeacher().getId());
+        String sql = "INSERT INTO spring.lessons (starttime, endTime, dayOfWeek, teacherId) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql, entity.getstarttime(), entity.getEndTime(), entity.getDayOfWeek(),
+                entity.getTeacher().getId());
         return entity;
     }
-
 
 }

@@ -1,8 +1,8 @@
 package com.ader.RestApi.dto;
 
 public class LessonDto {
-    private Long lessonId;
-    private String startTime;
+    private Long lessonid;
+    private String starttime;
     private String endTime;
     private String dayOfWeek;
     private Long teacherId;
@@ -11,19 +11,19 @@ public class LessonDto {
     public LessonDto() {
     }
 
-    public LessonDto(Long lessonId, String startTime, String endTime, String dayOfWeek, Long teacherId, Long courseId) {
-        this.lessonId = lessonId;
-        this.startTime = startTime;
+    public LessonDto(Long lessonid, String starttime, String endTime, String dayOfWeek, Long teacherId, Long courseId) {
+        this.lessonid = lessonid;
+        this.starttime = starttime;
         this.endTime = endTime;
         this.dayOfWeek = dayOfWeek;
         this.teacherId = teacherId;
         this.courseId = courseId;
     }
 
-    public Long getLessonId() {
-        return lessonId;
+    public Long getlessonid() {
+        return lessonid;
     }
-    
+
     public String getDayOfWeek() {
         return dayOfWeek;
     }
@@ -31,27 +31,30 @@ public class LessonDto {
     public String getEndTime() {
         return endTime;
     }
-    public String getStartTime() {
-        return startTime;
+
+    public String getstarttime() {
+        return starttime;
     }
+
     public Long getTeacherId() {
         return teacherId;
     }
 
     public void setDayOfWeek(String dayOfWeek) {
         this.dayOfWeek = dayOfWeek;
-    
+
     }
+
     public void setEndTime(String endTime) {
         this.endTime = endTime;
     }
 
-    public void setLessonId(Long lessonId) {
-        this.lessonId = lessonId;
+    public void setlessonid(Long lessonid) {
+        this.lessonid = lessonid;
     }
 
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
+    public void setstarttime(String starttime) {
+        this.starttime = starttime;
     }
 
     public void setTeacherId(Long teacherId) {
@@ -64,10 +67,11 @@ public class LessonDto {
 
     public void setCourseId(Long courseId) {
         this.courseId = courseId;
-    }       
+    }
+
     @Override
     public String toString() {
-        return "LessonDto [lessonId=" + lessonId + ", startTime=" + startTime + ", endTime=" + endTime + ", dayOfWeek="
+        return "LessonDto [lessonid=" + lessonid + ", starttime=" + starttime + ", endTime=" + endTime + ", dayOfWeek="
                 + dayOfWeek + ", teacherId=" + teacherId + ", courseId=" + courseId + "]";
     }
 }

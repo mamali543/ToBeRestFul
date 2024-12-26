@@ -33,7 +33,7 @@ public class CourseController {
 
     @GetMapping
     public ResponseEntity<List<Course>> getAllCourses(@RequestParam(defaultValue = "0") int page,
-                                                      @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(courseService.getAllCourses(page, size));
     }
 
@@ -71,16 +71,17 @@ public class CourseController {
     public ResponseEntity<List<Lesson>> getLessonsByCourseId(@PathVariable Long courseId) {
         return ResponseEntity.ok(courseService.getLessonsByCourseId(courseId));
     }
-    
-    @PutMapping("/{courseId}/lessons/{lessonId}")
-    public ResponseEntity<Lesson> updateLessonByCourse(@PathVariable Long courseId, @PathVariable Long lessonId, @RequestBody LessonDto lessonDto) {
+
+    @PutMapping("/{courseId}/lessons/{lessonid}")
+    public ResponseEntity<Lesson> updateLessonByCourse(@PathVariable Long courseId, @PathVariable Long lessonid,
+            @RequestBody LessonDto lessonDto) {
         lessonDto.setCourseId(courseId);
-        return ResponseEntity.ok(courseService.updateLessonByCourse(lessonId, lessonDto));
+        return ResponseEntity.ok(courseService.updateLessonByCourse(lessonid, lessonDto));
     }
 
-    @DeleteMapping("/{courseId}/lessons/{lessonId}")
-    public ResponseEntity<Void> deleteLessonByCourse(@PathVariable Long courseId, @PathVariable Long lessonId) {
-        courseService.deleteLessonByCourse(lessonId, courseId);
+    @DeleteMapping("/{courseId}/lessons/{lessonid}")
+    public ResponseEntity<Void> deleteLessonByCourse(@PathVariable Long courseId, @PathVariable Long lessonid) {
+        courseService.deleteLessonByCourse(lessonid, courseId);
         return ResponseEntity.noContent().build();
     }
 
@@ -99,7 +100,6 @@ public class CourseController {
         courseService.deleteStudentFromCourse(studentId, courseId);
         return ResponseEntity.noContent().build();
     }
-
 
     @PostMapping("/{courseId}/teachers/{teacherId}")
     public ResponseEntity<User> addTeacherToCourse(@PathVariable Long courseId, @PathVariable Long teacherId) {

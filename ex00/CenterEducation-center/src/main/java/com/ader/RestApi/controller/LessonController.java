@@ -35,25 +35,25 @@ public class LessonController {
 
     @GetMapping
     public ResponseEntity<List<Lesson>> getAllLessons(@RequestParam(defaultValue = "0") int page,
-                                                      @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(lessonService.getAllLessons(page, size));
     }
 
-    @GetMapping("/{lessonId}")
-    public ResponseEntity<Lesson> getLessonById(@PathVariable Long lessonId) {
-        return lessonService.getLessonById(lessonId)
+    @GetMapping("/{lesson_id}")
+    public ResponseEntity<Lesson> getLessonById(@PathVariable Long lesson_id) {
+        return lessonService.getLessonById(lesson_id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{lessonId}")
-    public ResponseEntity<Lesson> updateLesson(@PathVariable Long lessonId, @RequestBody LessonDto lessonDto) {
-        return ResponseEntity.ok(lessonService.updateLesson(lessonDto, lessonId));
+    @PutMapping("/{lesson_id}")
+    public ResponseEntity<Lesson> updateLesson(@PathVariable Long lesson_id, @RequestBody LessonDto lessonDto) {
+        return ResponseEntity.ok(lessonService.updateLesson(lessonDto, lesson_id));
     }
 
-    @DeleteMapping("/{lessonId}")
-    public ResponseEntity<Void> deleteLesson(@PathVariable Long lessonId) {
-        lessonService.deleteLesson(lessonId);
+    @DeleteMapping("/{lesson_id}")
+    public ResponseEntity<Void> deleteLesson(@PathVariable Long lesson_id) {
+        lessonService.deleteLesson(lesson_id);
         return ResponseEntity.noContent().build();
     }
 }

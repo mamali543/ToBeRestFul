@@ -36,9 +36,10 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public Lesson updateLesson(LessonDto lessonDto, Long lessonId) {
-        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new RuntimeException("Lesson with id " + lessonId + " not found"));
-        return lessonRepository.updateDto(lessonDto, lessonId);
+    public Lesson updateLesson(LessonDto lessonDto, Long lessonid) {
+        Lesson lesson = lessonRepository.findById(lessonid)
+                .orElseThrow(() -> new RuntimeException("Lesson with id " + lessonid + " not found"));
+        return lessonRepository.updateDto(lessonDto, lessonid);
     }
 
     @Override

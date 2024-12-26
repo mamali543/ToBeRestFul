@@ -71,6 +71,7 @@ public class CourseServiceImpl implements CourseService {
     {
         Course course = courseRepository.findById(lessonDto.getCourseId()).orElseThrow(() -> new BadRequestException("course not found"));
         // Lesson lesson1 = lessonRepository.findById(lessonDto.getLessonId()).orElseThrow(() -> new BadRequestException("lesson not found"));
+        System.out.println("lessonDto: " + lessonDto+ " >>>\n");
         Lesson lesson = lessonRepository.saveDto(lessonDto);
         if (course.getLessons() == null) {
             course.setLessons(new ArrayList<>());
@@ -80,8 +81,8 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<Lesson> getLessonsByCourseId(Long courseId) {
-        return lessonRepository.findByCourseId(courseId);
+    public List<Lesson> getLessonsByCourseId(Long course_id) {
+        return lessonRepository.findByCourseId(course_id);
     }
 
     @Override
@@ -110,50 +111,50 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public void deleteLessonByCourse(Long lessonId, Long courseId) {
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Lesson not found"));
-        lessonRepository.delete(lessonId);
+    public void deleteLessonByCourse(Long lesson_id, Long course_id) {
+        Course course = courseRepository.findById(course_id).orElseThrow(() -> new RuntimeException("Lesson not found"));
+        lessonRepository.delete(lesson_id);
     }
 
     @Override
-    public User addStudentToCourse(Long studentId, Long courseId) {
-        User student = userRepository.findById(studentId).orElseThrow(() -> new BadRequestException("Student not found"));
+    public User addStudentToCourse(Long student_id, Long course_id) {
+        User student = userRepository.findById(student_id).orElseThrow(() -> new BadRequestException("Student not found"));
         if (student.getRole() != Role.STUDENT) {
             throw new BadRequestException("User is not a student");
         }
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new BadRequestException("Course not found"));
-        courseRepository.addStudentToCourse(studentId, courseId);
+        Course course = courseRepository.findById(course_id).orElseThrow(() -> new BadRequestException("Course not found"));
+        courseRepository.addStudentToCourse(student_id, course_id);
         return student;
     }
 
     @Override
-    public List<User> getStudentsByCourseId(Long courseId) {
-        return courseRepository.getStudentsByCourseId(courseId);
+    public List<User> getStudentsByCourseId(Long course_id) {
+        return courseRepository.getStudentsByCourseId(course_id);
     }
 
     @Override
-    public void deleteStudentFromCourse(Long studentId, Long courseId) {
-        courseRepository.deleteStudentFromCourse(studentId, courseId);
+    public void deleteStudentFromCourse(Long student_id, Long course_id) {
+        courseRepository.deleteStudentFromCourse(student_id, course_id);
     }
 
     @Override
-    public User addTeacherToCourse(Long teacherId, Long courseId) {
-        User teacher = userRepository.findById(teacherId).orElseThrow(() -> new BadRequestException("Teacher not found"));
+    public User addTeacherToCourse(Long teacher_id, Long course_id) {
+        User teacher = userRepository.findById(teacher_id).orElseThrow(() -> new BadRequestException("Teacher not found"));
         if (teacher.getRole() != Role.TEACHER) {
             throw new BadRequestException("User is not a teacher");
         }
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new BadRequestException("Course not found"));
-        courseRepository.addTeacherToCourse(teacherId, courseId);
+        Course course = courseRepository.findById(course_id).orElseThrow(() -> new BadRequestException("Course not found"));
+        courseRepository.addTeacherToCourse(teacher_id, course_id);
         return teacher;
     }
 
     @Override   
-    public List<User> getTeachersByCourseId(Long courseId) {
-        return courseRepository.getTeachersByCourseId(courseId);
+    public List<User> getTeachersByCourseId(Long course_id) {
+        return courseRepository.getTeachersByCourseId(course_id);
     }
 
     @Override
-    public void deleteTeacherFromCourse(Long teacherId, Long courseId) {
-        courseRepository.deleteTeacherFromCourse(teacherId, courseId);
+    public void deleteTeacherFromCourse(Long teacher_id, Long course_id) {
+        courseRepository.deleteTeacherFromCourse(teacher_id, course_id);
     }
 }

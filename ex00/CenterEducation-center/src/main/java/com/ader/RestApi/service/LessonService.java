@@ -8,10 +8,15 @@ import com.ader.RestApi.pojo.Lesson;
 
 public interface LessonService {
     List<Lesson> getAllLessons(int page, int size);
+
     Lesson createLesson(LessonDto lessonDto);
+
     Optional<Lesson> getLessonById(Long id);
+
     // Lesson updateLesson(Lesson Lesson);
     Lesson saveLesson(Lesson Lesson);
+
     void deleteLesson(Long id);
-    Lesson updateLesson(LessonDto lessonDto, Long lessonId);
+
+    Lesson updateLesson(LessonDto lessonDto, Long lesson_id);
 }

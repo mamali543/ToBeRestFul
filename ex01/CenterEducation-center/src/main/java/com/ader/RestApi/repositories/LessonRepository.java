@@ -7,6 +7,8 @@ import com.ader.RestApi.pojo.Lesson;
 
 public interface LessonRepository extends CrudRepository<Lesson> {
     public Lesson saveDto(LessonDto entity);
-    public Lesson updateDto(LessonDto entity, Long lessonId);
+
+    public Lesson updateDto(LessonDto entity, Long lessonid);
+
     public List<Lesson> findByCourseId(Long courseId);
 }

@@ -20,6 +20,12 @@ import com.ader.RestApi.pojo.Lesson;
 import com.ader.RestApi.pojo.User;
 import com.ader.RestApi.service.CourseService;
 
+/**
+ * REST controller for managing courses and their associated resources (lessons,
+ * students, teachers).
+ * Provides endpoints for CRUD operations on courses and managing relationships
+ * with other entities.
+ */
 @RestController
 @RequestMapping("/courses")
 public class CourseController {
@@ -31,89 +37,189 @@ public class CourseController {
         this.courseService = courseService;
     }
 
+    /**
+     * Retrieves a paginated list of all courses.
+     * 
+     * @param page The page number (zero-based)
+     * @param size The number of items per page
+     * @return ResponseEntity containing a list of courses
+     */
     @GetMapping
     public ResponseEntity<List<Course>> getAllCourses(@RequestParam(defaultValue = "0") int page,
-                                                      @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(courseService.getAllCourses(page, size));
     }
 
+    /**
+     * Creates a new course.
+     * 
+     * @param course The course object to create
+     * @return ResponseEntity containing the created course
+     */
     @PostMapping
     public ResponseEntity<Course> createCourse(@RequestBody Course course) {
         return ResponseEntity.ok(courseService.createCourse(course));
     }
 
-    @GetMapping("/{courseId}")
-    public ResponseEntity<Course> getCourseById(@PathVariable Long courseId) {
-        return courseService.getCourseById(courseId)
+    /**
+     * Retrieves a specific course by its ID.
+     * 
+     * @param courseId The ID of the course to retrieve
+     * @return ResponseEntity containing the course if found, or 404 if not found
+     */
+    @GetMapping("/{course_id}")
+    public ResponseEntity<Course> getCourseById(@PathVariable Long course_id) {
+        return courseService.getCourseById(course_id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{courseId}")
-    public ResponseEntity<Course> updateCourse(@PathVariable Long courseId, @RequestBody Course course) {
-        course.setCourseId(courseId);
+    /**
+     * Updates an existing course.
+     * 
+     * @param courseId The ID of the course to update
+     * @param course   The updated course information
+     * @return ResponseEntity containing the updated course
+     */
+    @PutMapping("/{course_id}")
+    public ResponseEntity<Course> updateCourse(@PathVariable Long course_id, @RequestBody Course course) {
+        course.setCourseId(course_id);
         return ResponseEntity.ok(courseService.updateCourse(course));
     }
 
-    @DeleteMapping("/{courseId}")
-    public ResponseEntity<Void> deleteCourse(@PathVariable Long courseId) {
-        courseService.deleteCourse(courseId);
+    /**
+     * Deletes a course by its ID.
+     * 
+     * @param courseId The ID of the course to delete
+     * @return ResponseEntity with no content
+     */
+    @DeleteMapping("/{course_id}")
+    public ResponseEntity<Void> deleteCourse(@PathVariable Long course_id) {
+        courseService.deleteCourse(course_id);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{courseId}/lessons")
-    public ResponseEntity<Lesson> addLessonToCourse(@PathVariable Long courseId, @RequestBody LessonDto lessonDto) {
-        lessonDto.setCourseId(courseId);
+    /**
+     * Adds a new lesson to a course.
+     * 
+     * @param courseId  The ID of the course
+     * @param lessonDto The lesson information to add
+     * @return ResponseEntity containing the created lesson
+     */
+    @PostMapping("/{course_id}/lessons")
+        public ResponseEntity<Lesson> addLessonToCourse(@PathVariable Long course_id, @RequestBody LessonDto lessonDto) {
+        lessonDto.setCourseId(course_id);
         return ResponseEntity.ok(courseService.addLessonToCourse(lessonDto));
     }
 
-    @GetMapping("/{courseId}/lessons")
-    public ResponseEntity<List<Lesson>> getLessonsByCourseId(@PathVariable Long courseId) {
-        return ResponseEntity.ok(courseService.getLessonsByCourseId(courseId));
-    }
-    
-    @PutMapping("/{courseId}/lessons/{lessonId}")
-    public ResponseEntity<Lesson> updateLessonByCourse(@PathVariable Long courseId, @PathVariable Long lessonId, @RequestBody LessonDto lessonDto) {
-        lessonDto.setCourseId(courseId);
-        return ResponseEntity.ok(courseService.updateLessonByCourse(lessonId, lessonDto));
+    /**
+     * Retrieves all lessons for a specific course.
+     * 
+     * @param courseId The ID of the course
+     * @return ResponseEntity containing a list of lessons
+     */
+    @GetMapping("/{course_id}/lessons")
+    public ResponseEntity<List<Lesson>> getLessonsByCourseId(@PathVariable Long course_id) {
+        return ResponseEntity.ok(courseService.getLessonsByCourseId(course_id));
     }
 
-    @DeleteMapping("/{courseId}/lessons/{lessonId}")
-    public ResponseEntity<Void> deleteLessonByCourse(@PathVariable Long courseId, @PathVariable Long lessonId) {
-        courseService.deleteLessonByCourse(lessonId, courseId);
+    /**
+     * Updates a lesson within a course.
+     * 
+     * @param courseId  The ID of the course
+     * @param lesson_id  The ID of the lesson to update
+     * @param lessonDto The updated lesson information
+     * @return ResponseEntity containing the updated lesson
+     */
+    @PutMapping("/{course_id}/lessons/{lesson_id}")
+    public ResponseEntity<Lesson> updateLessonByCourse(@PathVariable Long course_id, @PathVariable Long lesson_id,
+            @RequestBody LessonDto lessonDto) {
+            lessonDto.setCourseId(course_id);
+        return ResponseEntity.ok(courseService.updateLessonByCourse(lesson_id, lessonDto));
+    }
+
+    /**
+     * Deletes a lesson from a course.
+     * 
+     * @param courseId The ID of the course
+     * @param lesson_id The ID of the lesson to delete
+     * @return ResponseEntity with no content
+     */
+    @DeleteMapping("/{course_id}/lessons/{lesson_id}")
+        public ResponseEntity<Void> deleteLessonByCourse(@PathVariable Long course_id, @PathVariable Long lesson_id) {
+        courseService.deleteLessonByCourse(lesson_id, course_id);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{courseId}/students/{studentId}")
-    public ResponseEntity<User> addStudentToCourse(@PathVariable Long courseId, @PathVariable Long studentId) {
-        return ResponseEntity.ok(courseService.addStudentToCourse(studentId, courseId));
+    /**
+     * Adds a student to a course.
+     * 
+     * @param course_id  The ID of the course
+     * @param student_id The ID of the student to add
+     * @return ResponseEntity containing the added student
+     */
+    @PostMapping("/{course_id}/students/{student_id}")
+    public ResponseEntity<User> addStudentToCourse(@PathVariable Long course_id, @PathVariable Long student_id) {
+        return ResponseEntity.ok(courseService.addStudentToCourse(student_id, course_id));
     }
 
-    @GetMapping("/{courseId}/students")
-    public ResponseEntity<List<User>> getStudentsByCourseId(@PathVariable Long courseId) {
-        return ResponseEntity.ok(courseService.getStudentsByCourseId(courseId));
+    /**
+     * Retrieves all students enrolled in a course.
+     * 
+     * @param courseId The ID of the course
+     * @return ResponseEntity containing a list of students
+     */
+    @GetMapping("/{course_id}/students")
+    public ResponseEntity<List<User>> getStudentsByCourseId(@PathVariable Long course_id) {
+        return ResponseEntity.ok(courseService.getStudentsByCourseId(course_id));
     }
 
-    @DeleteMapping("/{courseId}/students/{studentId}")
-    public ResponseEntity<Void> deleteStudentFromCourse(@PathVariable Long courseId, @PathVariable Long studentId) {
-        courseService.deleteStudentFromCourse(studentId, courseId);
+    /**
+     * Removes a student from a course.
+     * 
+     * @param course_id  The ID of the course
+     * @param student_id The ID of the student to remove
+     * @return ResponseEntity with no content
+     */
+    @DeleteMapping("/{course_id}/students/{student_id}")
+    public ResponseEntity<Void> deleteStudentFromCourse(@PathVariable Long course_id, @PathVariable Long student_id) {
+        courseService.deleteStudentFromCourse(student_id, course_id);
         return ResponseEntity.noContent().build();
     }
 
-
-    @PostMapping("/{courseId}/teachers/{teacherId}")
-    public ResponseEntity<User> addTeacherToCourse(@PathVariable Long courseId, @PathVariable Long teacherId) {
-        return ResponseEntity.ok(courseService.addTeacherToCourse(teacherId, courseId));
+    /**
+     * Adds a teacher to a course.
+     * 
+     * @param course_id  The ID of the course
+     * @param teacher_id The ID of the teacher to add
+     * @return ResponseEntity containing the added teacher
+     */
+    @PostMapping("/{course_id}/teachers/{teacher_id}")
+    public ResponseEntity<User> addTeacherToCourse(@PathVariable Long course_id, @PathVariable Long teacher_id) {
+        return ResponseEntity.ok(courseService.addTeacherToCourse(teacher_id, course_id));
     }
 
-    @GetMapping("/{courseId}/teachers")
-    public ResponseEntity<List<User>> getTeachersByCourseId(@PathVariable Long courseId) {
-        return ResponseEntity.ok(courseService.getTeachersByCourseId(courseId));
+    /**
+     * Retrieves all teachers assigned to a course.
+     * 
+     * @param course_id The ID of the course
+     * @return ResponseEntity containing a list of teachers
+     */
+    @GetMapping("/{course_id}/teachers")
+    public ResponseEntity<List<User>> getTeachersByCourseId(@PathVariable Long course_id) {
+        return ResponseEntity.ok(courseService.getTeachersByCourseId(course_id));
     }
 
-    @DeleteMapping("/{courseId}/teachers/{teacherId}")
-    public ResponseEntity<Void> deleteTeacherFromCourse(@PathVariable Long courseId, @PathVariable Long teacherId) {
-        courseService.deleteTeacherFromCourse(teacherId, courseId);
+    /**
+     * Removes a teacher from a course.
+     * 
+     * @param course_id  The ID of the course
+     * @param teacher_id The ID of the teacher to remove
+     * @return ResponseEntity with no content
+     */
+    @DeleteMapping("/{course_id}/teachers/{teacher_id}")
+    public ResponseEntity<Void> deleteTeacherFromCourse(@PathVariable Long course_id, @PathVariable Long teacher_id) {
+        courseService.deleteTeacherFromCourse(teacher_id, course_id);
         return ResponseEntity.noContent().build();
     }
 }

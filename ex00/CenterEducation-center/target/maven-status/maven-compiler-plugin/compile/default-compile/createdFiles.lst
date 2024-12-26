@@ -1,5 +1,6 @@
 com/ader/RestApi/repositories/LessonRepository.class
 com/ader/RestApi/service/UserService.class
+com/ader/RestApi/exception/ErrorResponse.class
 com/ader/RestApi/pojo/Course.class
 com/ader/RestApi/dto/LessonDto.class
 com/ader/RestApi/service/CourseServiceImpl.class

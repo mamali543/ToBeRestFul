@@ -22,14 +22,14 @@ public class CourseRepositoryImpl implements CourseRepository {
 
     @Override
     public Optional<Course> findById(Long id) {
-        String sql = "SELECT * FROM spring.courses WHERE courseId = ?";
+        String sql = "SELECT * FROM spring.courses WHERE course_id = ?";
         Course course = jdbcTemplate.queryForObject(sql, new CourseMapper(), id);
         return Optional.ofNullable(course);
     }
 
     @Override
     public List<Course> findAll(int page, int size) {
-        String sql = "SELECT * FROM spring.courses ORDER BY courseId LIMIT ? OFFSET ?";
+        String sql = "SELECT * FROM spring.courses ORDER BY course_id LIMIT ? OFFSET ?";
         return jdbcTemplate.query(sql, new CourseMapper(), size, page * size);
     }
 
@@ -42,50 +42,50 @@ public class CourseRepositoryImpl implements CourseRepository {
 
     @Override
     public Course update(Course entity) {
-        String sql = "UPDATE spring.courses SET startDate = ?, endDate = ?, name = ?, description = ? WHERE courseId = ?";
+        String sql = "UPDATE spring.courses SET start_date = ?, end_date = ?, name = ?, description = ? WHERE course_id = ?";
         jdbcTemplate.update(sql, entity.getStartDate(), entity.getEndDate(), entity.getName(), entity.getDescription(), entity.getCourseId());
         return entity;
     }
 
     @Override
     public void delete(Long id) {
-        String sql = "DELETE FROM spring.courses WHERE courseId = ?";
+        String sql = "DELETE FROM spring.courses WHERE course_id = ?";
         jdbcTemplate.update(sql, id);
     }
 
     @Override
-    public void addStudentToCourse(Long studentId, Long courseId) {
-        String sql = "INSERT INTO spring.course_students (courseId, studentId) VALUES (?, ?)";
-        jdbcTemplate.update(sql, courseId, studentId);
+    public void addStudentToCourse(Long student_id, Long course_id) {
+        String sql = "INSERT INTO spring.course_students (course_id, student_id) VALUES (?, ?)";
+        jdbcTemplate.update(sql, course_id, student_id);
     }
 
     @Override
-    public List<User> getStudentsByCourseId(Long courseId) {
-        String sql = "SELECT * FROM spring.users WHERE userId IN (SELECT studentId FROM spring.course_students WHERE courseId = ?)";
-        return jdbcTemplate.query(sql, new UserMapper(), courseId);
+    public List<User> getStudentsByCourseId(Long course_id) {
+        String sql = "SELECT * FROM spring.users WHERE user_id IN (SELECT student_id FROM spring.course_students WHERE course_id = ?)";
+        return jdbcTemplate.query(sql, new UserMapper(), course_id);
     }
 
     @Override
-    public void deleteStudentFromCourse(Long studentId, Long courseId) {
-        String sql = "DELETE FROM spring.course_students WHERE courseId = ? AND studentId = ?";
-        jdbcTemplate.update(sql, courseId, studentId);
+    public void deleteStudentFromCourse(Long student_id, Long course_id) {
+        String sql = "DELETE FROM spring.course_students WHERE course_id = ? AND student_id = ?";
+        jdbcTemplate.update(sql, course_id, student_id);
     }
 
     @Override
-    public void addTeacherToCourse(Long teacherId, Long courseId) {
-        String sql = "INSERT INTO spring.course_teachers (courseId, teacherId) VALUES (?, ?)";
-        jdbcTemplate.update(sql, courseId, teacherId);
+    public void addTeacherToCourse(Long teacher_id, Long course_id) {
+        String sql = "INSERT INTO spring.course_teachers (course_id, teacher_id) VALUES (?, ?)";
+        jdbcTemplate.update(sql, course_id, teacher_id);
     }
 
     @Override
-    public List<User> getTeachersByCourseId(Long courseId) {
-        String sql = "SELECT * FROM spring.users WHERE userId IN (SELECT teacherId FROM spring.course_teachers WHERE courseId = ?)";
-        return jdbcTemplate.query(sql, new UserMapper(), courseId);
+    public List<User> getTeachersByCourseId(Long course_id) {
+        String sql = "SELECT * FROM spring.users WHERE user_id IN (SELECT teacher_id FROM spring.course_teachers WHERE course_id = ?)";
+        return jdbcTemplate.query(sql, new UserMapper(), course_id);
     }
 
     @Override
-    public void deleteTeacherFromCourse(Long teacherId, Long courseId) {
-        String sql = "DELETE FROM spring.course_teachers WHERE courseId = ? AND teacherId = ?";
-        jdbcTemplate.update(sql, courseId, teacherId);
+    public void deleteTeacherFromCourse(Long teacher_id, Long course_id) {
+        String sql = "DELETE FROM spring.course_teachers WHERE course_id = ? AND teacher_id = ?";
+        jdbcTemplate.update(sql, course_id, teacher_id);
     }
 }

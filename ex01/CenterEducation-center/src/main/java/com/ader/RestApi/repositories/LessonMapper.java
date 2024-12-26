@@ -9,14 +9,13 @@ import com.ader.RestApi.pojo.Lesson;
 import com.ader.RestApi.pojo.Role;
 import com.ader.RestApi.pojo.User;
 
-
 public class LessonMapper implements RowMapper<Lesson> {
 
     @Override
-    public Lesson  mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public Lesson mapRow(ResultSet rs, int rowNum) throws SQLException {
         Lesson lesson = new Lesson();
-        lesson.setLessonId(rs.getLong("lessonId"));
-        lesson.setStartTime(rs.getTime("startTime").toLocalTime());
+        lesson.setlessonid(rs.getLong("lessonid"));
+        lesson.setstarttime(rs.getTime("starttime").toLocalTime());
         lesson.setEndTime(rs.getTime("endTime").toLocalTime());
         lesson.setDayOfWeek(rs.getString("dayOfWeek"));
 

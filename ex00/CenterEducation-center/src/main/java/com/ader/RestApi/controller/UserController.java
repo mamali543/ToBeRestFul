@@ -30,7 +30,7 @@ public class UserController {
 
     @GetMapping
     public List<User> getAllUsers(@RequestParam(defaultValue = "0") int page,
-                                  @RequestParam(defaultValue = "10") int size) {
+                                @RequestParam(defaultValue = "10") int size) {
         return userService.getAllUsers(page, size);
     }
 
@@ -39,22 +39,22 @@ public class UserController {
         return ResponseEntity.ok(userService.createUser(user));
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<User> getUserById(@PathVariable Long userId) {
-        return userService.getUserById(userId)
+    @GetMapping("/{user_id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long user_id) {
+        return userService.getUserById(user_id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{userId}")
-    public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody User user) {
-        user.setId(userId);
+    @PutMapping("/{user_id}")
+    public ResponseEntity<User> updateUser(@PathVariable Long user_id, @RequestBody User user) {
+        user.setId(user_id);
         return ResponseEntity.ok(userService.updateUser(user));
     }
 
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
-        userService.deleteUser(userId);
+    @DeleteMapping("/{user_id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long user_id) {
+        userService.deleteUser(user_id);
         return ResponseEntity.noContent().build();
     }
 }

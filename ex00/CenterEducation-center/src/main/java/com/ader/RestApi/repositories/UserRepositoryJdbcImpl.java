@@ -22,7 +22,7 @@ public class UserRepositoryJdbcImpl implements UserRepository {
 
     @Override
     public Optional<User> findById(Long id) {
-        String sql = "SELECT * FROM spring.users WHERE userId = ?";
+        String sql = "SELECT * FROM spring.users WHERE user_id = ?";
         try {
             User user = jdbcTemplate.queryForObject(sql, new UserMapper(), id);
             return Optional.ofNullable(user);
@@ -44,28 +44,28 @@ public class UserRepositoryJdbcImpl implements UserRepository {
 
     @Override
     public List<User> findAll(int page, int size) {
-        String sql = "SELECT * FROM spring.users ORDER BY userId LIMIT ? OFFSET ?";
+        String sql = "SELECT * FROM spring.users ORDER BY user_id LIMIT ? OFFSET ?";
         return jdbcTemplate.query(sql, new UserMapper(), size, page * size);
     }
 
     @Override
     public User save(User entity) {
         System.out.println(entity.toString());
-        String sql = "INSERT INTO spring.users (firstName, lastName, login, password, role) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO spring.users (first_name, last_name, login, password, role) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, entity.getFirstName(), entity.getLastName(),  entity.getLogin(), entity.getPassword(), entity.getRole().ordinal());
         return entity;
     }
 
     @Override
     public User update(User entity) {
-        String sql = "UPDATE spring.users SET firstName = ?, lastName = ?, login = ?, password = ?, role = ? WHERE userId = ?";
+        String sql = "UPDATE spring.users SET first_name = ?, last_name = ?, login = ?, password = ?, role = ? WHERE user_id = ?";
         jdbcTemplate.update(sql, entity.getFirstName(), entity.getLastName(), entity.getLogin(), entity.getPassword(), entity.getRole().ordinal(), entity.getId());
         return  entity;
     }
 
     @Override
     public void delete(Long id) {
-        String sql = "DELETE FROM spring.users WHERE userId = ?";
+        String sql = "DELETE FROM spring.users WHERE user_id = ?";
         jdbcTemplate.update(sql, new Object[]{ id });
     }
 

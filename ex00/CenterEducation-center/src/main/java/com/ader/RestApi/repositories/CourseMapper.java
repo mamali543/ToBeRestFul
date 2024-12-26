@@ -11,7 +11,7 @@ public class CourseMapper implements RowMapper<Course> {
 
     @Override
     public Course mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Course course = new Course(rs.getLong("courseId") , rs.getDate("startDate").toLocalDate(), rs.getDate("endDate").toLocalDate(), rs.getString("name"), null, null, rs.getString("description"), null);
+        Course course = new Course(rs.getLong("course_id") , rs.getDate("start_date").toLocalDate(), rs.getDate("end_date").toLocalDate(), rs.getString("name"), null, null, rs.getString("description"), null);
         return course;
     }
 }
