@@ -1,11 +1,14 @@
+# Maven build directory
 target/
-.idea/
-*.iml
+
+# Compiled files
 *.class
 *.jar
 *.war
+
+# IDE files
+.idea/
+*.iml
+
+# OS files
 .DS_Store
-.env
-/data
-
-
