@@ -1,77 +1,40 @@
 package com.ader.RestApi.pojo;
 
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalTime;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
-@JsonPropertyOrder({ "lessonid", "starttime", "endTime", "dayOfWeek", "teacher" })
+@Entity
+@Table(name = "lessons", schema = "spring")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonPropertyOrder({ "lessonId", "startTime", "endTime", "dayOfWeek", "teacher", "course" })
 public class Lesson {
-    private Long lessonid;
-    private LocalTime starttime;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "lesson_id")
+    private Long lessonId;
+
+    @Column(name = "start_time", nullable = false)
+    private LocalTime startTime;
+
+    @Column(name = "end_time", nullable = false)
     private LocalTime endTime;
+
+    @Column(name = "day_of_week", nullable = false)
     private String dayOfWeek;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "teacher_id", nullable = false)
     private User teacher;
 
-    public Lesson() {
-    }
-
-    public Lesson(Long lessonid, LocalTime starttime, LocalTime endTime, String dayOfWeek, User teacher) {
-        this.lessonid = lessonid;
-        this.starttime = starttime;
-        this.endTime = endTime;
-        this.dayOfWeek = dayOfWeek;
-        this.teacher = teacher;
-    }
-
-    // Getters and setters
-    public Long getlessonid() {
-        return lessonid;
-    }
-
-    public void setlessonid(Long lessonid) {
-        this.lessonid = lessonid;
-    }
-
-    public LocalTime getstarttime() {
-        return starttime;
-    }
-
-    public void setstarttime(LocalTime starttime) {
-        this.starttime = starttime;
-    }
-
-    public LocalTime getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(LocalTime endTime) {
-        this.endTime = endTime;
-    }
-
-    public String getDayOfWeek() {
-        return dayOfWeek;
-    }
-
-    public void setDayOfWeek(String dayOfWeek) {
-        this.dayOfWeek = dayOfWeek;
-    }
-
-    public User getTeacher() {
-        return teacher;
-    }
-
-    public void setTeacher(User teacher) {
-        this.teacher = teacher;
-    }
-
-    @Override
-    public String toString() {
-        return "Lesson{" +
-                "lessonid=" + lessonid +
-                ", starttime=" + starttime +
-                ", endTime=" + endTime +
-                ", dayOfWeek='" + dayOfWeek + '\'' +
-                ", teacher=" + teacher.toString() +
-                '}';
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id", nullable = false)
+    @JsonIgnore
+    private Course course;
 }
