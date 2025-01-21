@@ -1,22 +1,22 @@
-package com.ader.RestApi.service;
+// package com.ader.RestApi.service;
 
-import java.util.List;
-import java.util.Optional;
+// import java.util.List;
+// import java.util.Optional;
 
-import com.ader.RestApi.dto.LessonDto;
-import com.ader.RestApi.pojo.Lesson;
+// import com.ader.RestApi.dto.LessonDto;
+// import com.ader.RestApi.pojo.Lesson;
 
-public interface LessonService {
-    List<Lesson> getAllLessons(int page, int size);
+// public interface LessonService {
+//     List<Lesson> getAllLessons(int page, int size);
 
-    Lesson createLesson(LessonDto lessonDto);
+//     Lesson createLesson(LessonDto lessonDto);
 
-    Optional<Lesson> getLessonById(Long id);
+//     Optional<Lesson> getLessonById(Long id);
 
-    // Lesson updateLesson(Lesson Lesson);
-    Lesson saveLesson(Lesson Lesson);
+//     // Lesson updateLesson(Lesson Lesson);
+//     Lesson saveLesson(Lesson Lesson);
 
-    void deleteLesson(Long id);
+//     void deleteLesson(Long id);
 
-    Lesson updateLesson(LessonDto lessonDto, Long lessonid);
-}
+//     Lesson updateLesson(LessonDto lessonDto, Long lessonid);
+// }

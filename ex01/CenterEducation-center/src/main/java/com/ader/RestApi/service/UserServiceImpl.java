@@ -1,16 +1,17 @@
 package com.ader.RestApi.service;
 
-
 import com.ader.RestApi.pojo.User;
 import com.ader.RestApi.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+// import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
@@ -20,8 +21,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<User> getAllUsers(int page, int size) {
-        return userRepository.findAll(page, size);
+    public Page<User> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     @Override
@@ -36,15 +37,11 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User updateUser(User user) {
-        return userRepository.update(user);
+        return userRepository.save(user);
     }
 
     @Override
-    public User saveUser(User user) {
-        return null;
-    }
-
     public void deleteUser(Long id) {
-        userRepository.delete(id);
+        userRepository.deleteById(id);
     }
 }
