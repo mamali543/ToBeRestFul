@@ -19,9 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ader.RestApi.pojo.User;
 import com.ader.RestApi.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/users")
+@Tag(name = "User Controller", description = "Endpoints for managing users")
 public class UserController {
 
     private final UserService userService;
@@ -32,6 +35,7 @@ public class UserController {
     }
 
     @GetMapping
+    @Operation(summary = "Get all users")
     public ResponseEntity<Page<User>> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -41,11 +45,13 @@ public class UserController {
     }
 
     @PostMapping
+    @Operation(summary = "Create a new user")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         return ResponseEntity.ok(userService.createUser(user));
     }
 
     @GetMapping("/{userId}")
+    @Operation(summary = "Get a user by ID")
     public ResponseEntity<User> getUserById(@PathVariable Long userId) {
         return userService.getUserById(userId)
                 .map(ResponseEntity::ok)
@@ -53,12 +59,14 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
+    @Operation(summary = "Update a user")
     public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody User user) {
         user.setUserId(userId);
         return ResponseEntity.ok(userService.updateUser(user));
     }
 
     @DeleteMapping("/{userId}")
+    @Operation(summary = "Delete a user")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();

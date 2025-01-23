@@ -1,59 +1,68 @@
-// package com.ader.RestApi.controller;
+package com.ader.RestApi.controller;
 
-// import java.util.List;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import com.ader.RestApi.dto.LessonDto;
+import com.ader.RestApi.pojo.Lesson;
+import com.ader.RestApi.service.LessonService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.web.bind.annotation.DeleteMapping;
-// import org.springframework.web.bind.annotation.GetMapping;
-// import org.springframework.web.bind.annotation.PathVariable;
-// import org.springframework.web.bind.annotation.PostMapping;
-// import org.springframework.web.bind.annotation.PutMapping;
-// import org.springframework.web.bind.annotation.RequestBody;
-// import org.springframework.web.bind.annotation.RequestMapping;
-// import org.springframework.web.bind.annotation.RequestParam;
-// import org.springframework.web.bind.annotation.RestController;
+@RestController
+@RequestMapping("/lessons")
+@Tag(name = "Lesson Controller", description = "Endpoints for managing lessons")
+public class LessonController {
+    private final LessonService lessonService;
 
-// import com.ader.RestApi.dto.LessonDto;
-// import com.ader.RestApi.pojo.Lesson;
-// import com.ader.RestApi.service.LessonService;
+    @Autowired
+    public LessonController(LessonService lessonService) {
+        this.lessonService = lessonService;
+    }
 
-// @RestController
-// @RequestMapping("/lessons")
-// public class LessonController {
-//     private final LessonService lessonService;
+    @PostMapping
+    @Operation(summary = "Create a new lesson")
+    public ResponseEntity<Lesson> createLesson(@RequestBody LessonDto lessonDto) {
+        return ResponseEntity.ok(lessonService.createLesson(lessonDto));
+    }
 
-//     @Autowired
-//     public LessonController(LessonService lessonService) {
-//         this.lessonService = lessonService;
-//     }
+    @GetMapping
+    @Operation(summary = "Get all lessons with pagination")
+    public ResponseEntity<Page<Lesson>> getAllLessons(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(lessonService.getAllLessons(PageRequest.of(page, size)));
+    }
 
-//     @PostMapping
-//     public ResponseEntity<Lesson> createLesson(@RequestBody LessonDto lesson) {
-//         return ResponseEntity.ok(lessonService.createLesson(lesson));
-//     }
+    @GetMapping("/{lessonId}")
+    @Operation(summary = "Get a lesson by ID")
+    public ResponseEntity<Lesson> getLessonById(@PathVariable Long lessonId) {
+        return lessonService.getLessonById(lessonId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
-//     @GetMapping
-//     public ResponseEntity<List<Lesson>> getAllLessons(@RequestParam(defaultValue = "0") int page,
-//             @RequestParam(defaultValue = "10") int size) {
-//         return ResponseEntity.ok(lessonService.getAllLessons(page, size));
-//     }
+    @GetMapping("/course/{courseId}")
+    @Operation(summary = "Get all lessons for a specific course")
+    public ResponseEntity<List<Lesson>> getLessonsByCourseId(@PathVariable Long courseId) {
+        return ResponseEntity.ok(lessonService.getLessonsByCourseId(courseId));
+    }
 
-//     @GetMapping("/{lessonid}")
-//     public ResponseEntity<Lesson> getLessonById(@PathVariable Long lessonid) {
-//         return lessonService.getLessonById(lessonid)
-//                 .map(ResponseEntity::ok)
-//                 .orElse(ResponseEntity.notFound().build());
-//     }
+    @PutMapping("/{lessonId}")
+    @Operation(summary = "Update a lesson")
+    public ResponseEntity<Lesson> updateLesson(
+            @PathVariable Long lessonId,
+            @RequestBody LessonDto lessonDto) {
+        return ResponseEntity.ok(lessonService.updateLesson(lessonDto, lessonId));
+    }
 
-//     @PutMapping("/{lessonid}")
-//     public ResponseEntity<Lesson> updateLesson(@PathVariable Long lessonid, @RequestBody LessonDto lessonDto) {
-//         return ResponseEntity.ok(lessonService.updateLesson(lessonDto, lessonid));
-//     }
-
-//     @DeleteMapping("/{lessonid}")
-//     public ResponseEntity<Void> deleteLesson(@PathVariable Long lessonid) {
-//         lessonService.deleteLesson(lessonid);
-//         return ResponseEntity.noContent().build();
-//     }
-// }
+    @DeleteMapping("/{lessonId}")
+    @Operation(summary = "Delete a lesson")
+    public ResponseEntity<Void> deleteLesson(@PathVariable Long lessonId) {
+        lessonService.deleteLesson(lessonId);
+        return ResponseEntity.noContent().build();
+    }
+}

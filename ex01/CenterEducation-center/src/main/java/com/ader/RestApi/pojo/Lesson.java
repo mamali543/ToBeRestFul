@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalTime;
 
@@ -29,12 +30,14 @@ public class Lesson {
     @Column(name = "day_of_week", nullable = false)
     private String dayOfWeek;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "teacher_id", nullable = false)
-    private User teacher;
+    @ManyToOne(fetch = FetchType.LAZY)    // Defines many-to-one relationship with User entity, using lazy loading for performance
+    @JoinColumn(name = "teacher_id", nullable = false)    // Specifies the foreign key column in the lessons table
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})    // Prevents serialization of Hibernate proxy properties to avoid circular references
+    private User teacher;    // Reference to the teacher (User) associated with this lesson
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JsonIgnore
     private Course course;
 }

@@ -1,166 +1,255 @@
-// package com.ader.RestApi.service;
+package com.ader.RestApi.service;
 
-// import java.time.format.DateTimeFormatter;
-// import java.util.ArrayList;
-// import java.util.List;
-// import java.util.Optional;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
 
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-// import com.ader.RestApi.dto.LessonDto;
-// import com.ader.RestApi.exception.BadRequestException;
-// import com.ader.RestApi.pojo.Course;
-// import com.ader.RestApi.pojo.Lesson;
-// import com.ader.RestApi.pojo.Role;
-// import com.ader.RestApi.pojo.User;
-// import com.ader.RestApi.repositories.CourseRepository;
-// import com.ader.RestApi.repositories.LessonRepository;
-// import com.ader.RestApi.repositories.UserRepository;
+import com.ader.RestApi.dto.LessonDto;
+import com.ader.RestApi.exception.BadRequestException;
+import com.ader.RestApi.pojo.Course;
+import com.ader.RestApi.pojo.Lesson;
+import com.ader.RestApi.pojo.Role;
+import com.ader.RestApi.pojo.User;
+import com.ader.RestApi.repositories.CourseRepository;
+import com.ader.RestApi.repositories.LessonRepository;
+import com.ader.RestApi.repositories.UserRepository;
 
-// @Service
-// public class CourseServiceImpl implements CourseService {
+@Service
+@Transactional
+public class CourseServiceImpl implements CourseService {
 
-//     @Autowired
-//     private CourseRepository courseRepository;
+    private final CourseRepository courseRepository;
+    private final UserRepository userRepository;
+    private final LessonRepository lessonRepository;
 
-//     @Autowired
-//     private UserRepository userRepository;
+    @Autowired
+    public CourseServiceImpl(CourseRepository courseRepository, LessonRepository lessonRepository, UserRepository userRepository) {
+        this.courseRepository = courseRepository;
+        this.lessonRepository = lessonRepository;
+        this.userRepository = userRepository;
+    }
 
-//     @Autowired
-//     private LessonRepository lessonRepository;
+    @Override
+    public Page<Course> getAllCourses(Pageable pageable) {
+        return courseRepository.findAll(pageable);
+    }
 
-//     public CourseServiceImpl(CourseRepository courseRepository, LessonRepository lessonRepository,
-//             UserRepository userRepository) {
-//         this.courseRepository = courseRepository;
-//         this.lessonRepository = lessonRepository;
-//         this.userRepository = userRepository;
-//     }
+    @Override
+    public Course createCourse(Course course) {
+        // 1. Save teachers
+        if (course.getTeachers() != null) {
+            List<User> savedTeachers = course.getTeachers().stream()
+                .map(teacher -> userRepository.findByLogin(teacher.getLogin())
+                    .orElseGet(() -> userRepository.save(teacher)))
+                .collect(Collectors.toList());
+            course.setTeachers(savedTeachers);
+        }
 
-//     @Override
-//     public List<Course> getAllCourses(int page, int size) {
-//         return courseRepository.findAll(page, size);
-//     }
+        // 2. Save students
+        if (course.getStudents() != null) {
+            List<User> savedStudents = course.getStudents().stream()
+                .map(student -> userRepository.findByLogin(student.getLogin())
+                    .orElseGet(() -> userRepository.save(student)))
+                .collect(Collectors.toList());
+            course.setStudents(savedStudents);
+        }
 
-//     @Override
-//     public Course createCourse(Course course) {
-//         return courseRepository.save(course);
-//     }
+        // 3. Save the course first (without lessons)
+        List<Lesson> tempLessons = course.getLessons();
+        course.setLessons(new ArrayList<>());
+        Course savedCourse = courseRepository.save(course);
 
-//     @Override
-//     public Optional<Course> getCourseById(Long id) {
-//         return courseRepository.findById(id);
-//     }
+        // 4. Save lessons with references to the saved course
+        if (tempLessons != null) {
+            List<Lesson> savedLessons = tempLessons.stream()
+                .map(lesson -> {
+                    // Find or save the teacher for this lesson
+                    User teacher = userRepository.findByLogin(lesson.getTeacher().getLogin())
+                        .orElseGet(() -> userRepository.save(lesson.getTeacher()));
+                    
+                    // Set the saved course and teacher
+                    lesson.setCourse(savedCourse);
+                    lesson.setTeacher(teacher);
+                    
+                    return lessonRepository.save(lesson);
+                })
+                .collect(Collectors.toList());
+            
+            // Update course with saved lessons
+            savedCourse.setLessons(savedLessons);
+        }
 
-//     @Override
-//     public Course updateCourse(Course course) {
-//         return courseRepository.update(course);
-//     }
+        return savedCourse;
+    }
 
-//     @Override
-//     public Course saveCourse(Course course) {
-//         return courseRepository.save(course);
-//     }
+    @Override
+    public Optional<Course> getCourseById(Long id) {
+        return courseRepository.findById(id);
+    }
 
-//     @Override
-//     public void deleteCourse(Long id) {
-//         courseRepository.delete(id);
-//     }
+    @Override
+    public Course updateCourse(Course course) {
+        if (!courseRepository.existsById(course.getCourseId())) {
+            throw new BadRequestException("Course not found with id: " + course.getCourseId());
+        }
+        return courseRepository.save(course);
+    }
 
-//     @Override
-//     public Lesson addLessonToCourse(LessonDto lessonDto) {
-//         Course course = courseRepository.findById(lessonDto.getCourseId())
-//                 .orElseThrow(() -> new BadRequestException("course not found"));
-//         Lesson lesson1 = lessonRepository.findById(lessonDto.getlessonid())
-//                 .orElseThrow(() -> new BadRequestException("lesson not found"));
-//         Lesson lesson = lessonRepository.saveDto(lessonDto);
-//         if (course.getLessons() == null) {
-//             course.setLessons(new ArrayList<>());
-//         }
-//         course.getLessons().add(lesson);
-//         return lesson;
-//     }
+    @Override
+    public void deleteCourse(Long id) {
+        if (!courseRepository.existsById(id)) {
+            throw new BadRequestException("Course not found with id: " + id);
+        }
+        courseRepository.deleteById(id);
+    }
 
-//     @Override
-//     public List<Lesson> getLessonsByCourseId(Long courseId) {
-//         return lessonRepository.findByCourseId(courseId);
-//     }
+    @Override
+    public Lesson addLessonToCourse(LessonDto lessonDto) {
+        Course course = courseRepository.findById(lessonDto.getCourseId())
+                .orElseThrow(() -> new BadRequestException("Course not found"));
+        
+        User teacher = userRepository.findById(lessonDto.getTeacherId())
+                .orElseThrow(() -> new BadRequestException("Teacher not found"));
+        
+        if (teacher.getRole() != Role.TEACHER) {
+            throw new BadRequestException("User is not a teacher");
+        }
 
-//     @Override
-//     public Lesson updateLessonByCourse(Long lessonid, LessonDto lessonDto) {
-//         // verify if there's a course with this id!
-//         Course course = courseRepository.findById(lessonDto.getCourseId())
-//                 .orElseThrow(() -> new RuntimeException("Course not found"));
-//         // Find the lesson
-//         Lesson lessonToUpdate = lessonRepository.findById(lessonid)
-//                 .orElseThrow(() -> new RuntimeException("Lesson not found with id: " + lessonid));
-//         // Update only non-null fields
-//         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-//         if (lessonDto.getstarttime() == null) {
-//             lessonDto.setstarttime(lessonToUpdate.getstarttime().format(formatter));
-//         }
-//         if (lessonDto.getEndTime() == null) {
-//             lessonDto.setEndTime(lessonToUpdate.getEndTime().format(formatter));
-//         }
-//         if (lessonDto.getDayOfWeek() == null) {
-//             lessonDto.setDayOfWeek(lessonToUpdate.getDayOfWeek());
-//         }
-//         if (lessonDto.getTeacherId() == null) {
-//             lessonDto.setTeacherId(lessonToUpdate.getTeacher().getId());
-//         }
-//         // update the lesson
-//         return lessonRepository.updateDto(lessonDto, lessonid);
-//     }
+        Lesson lesson = new Lesson();
+        lesson.setCourse(course);
+        lesson.setTeacher(teacher);
+        lesson.setStartTime(lessonDto.getStartTime());
+        lesson.setEndTime(lessonDto.getEndTime());
+        lesson.setDayOfWeek(lessonDto.getDayOfWeek());
 
-//     @Override
-//     public void deleteLessonByCourse(Long lessonid, Long courseId) {
-//         Course course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Lesson not found"));
-//         lessonRepository.delete(lessonid);
-//     }
+        return lessonRepository.save(lesson);
+    }
 
-//     @Override
-//     public User addStudentToCourse(Long studentId, Long courseId) {
-//         User student = userRepository.findById(studentId)
-//                 .orElseThrow(() -> new BadRequestException("Student not found"));
-//         if (student.getRole() != Role.STUDENT) {
-//             throw new BadRequestException("User is not a student");
-//         }
-//         Course course = courseRepository.findById(courseId)
-//                 .orElseThrow(() -> new BadRequestException("Course not found"));
-//         courseRepository.addStudentToCourse(studentId, courseId);
-//         return student;
-//     }
+    @Override
+    public List<Lesson> getLessonsByCourseId(Long courseId) {
+        if (!courseRepository.existsById(courseId)) {
+                throw new BadRequestException("Course not found with id: " + courseId);
+        }
+        return lessonRepository.findByCourse_CourseId(courseId);
+    }
 
-//     @Override
-//     public List<User> getStudentsByCourseId(Long courseId) {
-//         return courseRepository.getStudentsByCourseId(courseId);
-//     }
+    @Override
+    public Lesson updateLessonByCourse(Long lessonId, LessonDto lessonDto) {
+        Course course = courseRepository.findById(lessonDto.getCourseId())
+                .orElseThrow(() -> new BadRequestException("Course not found"));
 
-//     @Override
-//     public void deleteStudentFromCourse(Long studentId, Long courseId) {
-//         courseRepository.deleteStudentFromCourse(studentId, courseId);
-//     }
+        Lesson lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new BadRequestException("Lesson not found"));
 
-//     @Override
-//     public User addTeacherToCourse(Long teacherId, Long courseId) {
-//         User teacher = userRepository.findById(teacherId)
-//                 .orElseThrow(() -> new BadRequestException("Teacher not found"));
-//         if (teacher.getRole() != Role.TEACHER) {
-//             throw new BadRequestException("User is not a teacher");
-//         }
-//         Course course = courseRepository.findById(courseId)
-//                 .orElseThrow(() -> new BadRequestException("Course not found"));
-//         courseRepository.addTeacherToCourse(teacherId, courseId);
-//         return teacher;
-//     }
+        if (!lesson.getCourse().getCourseId().equals(course.getCourseId())) {
+            throw new BadRequestException("Lesson does not belong to this course");
+        }
 
-//     @Override
-//     public List<User> getTeachersByCourseId(Long courseId) {
-//         return courseRepository.getTeachersByCourseId(courseId);
-//     }
+        lesson.setStartTime(lessonDto.getStartTime());
+        lesson.setEndTime(lessonDto.getEndTime());
+        lesson.setDayOfWeek(lessonDto.getDayOfWeek());
 
-//     @Override
-//     public void deleteTeacherFromCourse(Long teacherId, Long courseId) {
-//         courseRepository.deleteTeacherFromCourse(teacherId, courseId);
-//     }
-// }
+        if (lessonDto.getTeacherId() != null) {
+            User teacher = userRepository.findById(lessonDto.getTeacherId())
+                    .orElseThrow(() -> new BadRequestException("Teacher not found"));
+            if (teacher.getRole() != Role.TEACHER) {
+                throw new BadRequestException("User is not a teacher");
+            }
+            lesson.setTeacher(teacher);
+        }
+
+        return lessonRepository.save(lesson);
+    }
+
+    @Override
+    public void deleteLessonByCourse(Long lessonId, Long courseId) {
+        Lesson lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new BadRequestException("Lesson not found"));
+
+        if (!lesson.getCourse().getCourseId().equals(courseId)) {
+            throw new BadRequestException("Lesson does not belong to this course");
+        }
+
+        lessonRepository.delete(lesson);
+    }
+
+    @Override
+    public User addStudentToCourse(Long studentId, Long courseId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new BadRequestException("Course not found"));
+
+        User student = userRepository.findById(studentId)
+                .orElseThrow(() -> new BadRequestException("Student not found"));
+
+        if (student.getRole() != Role.STUDENT) {
+            throw new BadRequestException("User is not a student");
+        }
+
+        course.getStudents().add(student);
+        courseRepository.save(course);
+        return student;
+    }
+
+    @Override
+    public List<User> getStudentsByCourseId(Long courseId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new BadRequestException("Course not found"));
+        return course.getStudents();
+    }
+
+    @Override
+    public void deleteStudentFromCourse(Long studentId, Long courseId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new BadRequestException("Course not found"));
+
+        User student = userRepository.findById(studentId)
+                .orElseThrow(() -> new BadRequestException("Student not found"));
+
+        course.getStudents().remove(student);
+        courseRepository.save(course);
+    }
+
+    @Override
+    public User addTeacherToCourse(Long teacherId, Long courseId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new BadRequestException("Course not found"));
+
+        User teacher = userRepository.findById(teacherId)
+                .orElseThrow(() -> new BadRequestException("Teacher not found"));
+
+        if (teacher.getRole() != Role.TEACHER) {
+            throw new BadRequestException("User is not a teacher");
+        }
+
+        course.getTeachers().add(teacher);
+        courseRepository.save(course);
+        return teacher;
+    }
+
+    @Override
+    public List<User> getTeachersByCourseId(Long courseId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new BadRequestException("Course not found"));
+        return course.getTeachers();
+    }
+
+    @Override
+    public void deleteTeacherFromCourse(Long teacherId, Long courseId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new BadRequestException("Course not found"));
+
+        User teacher = userRepository.findById(teacherId)
+                .orElseThrow(() -> new BadRequestException("Teacher not found"));
+
+        course.getTeachers().remove(teacher);
+        courseRepository.save(course);
+    }
+}

@@ -1,14 +1,12 @@
 package com.ader.RestApi.repositories;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import com.ader.RestApi.pojo.Lesson;
 import java.util.List;
 
-import com.ader.RestApi.dto.LessonDto;
-import com.ader.RestApi.pojo.Lesson;
-
-public interface LessonRepository extends CrudRepository<Lesson> {
-    public Lesson saveDto(LessonDto entity);
-
-    public Lesson updateDto(LessonDto entity, Long lessonid);
-
-    public List<Lesson> findByCourseId(Long courseId);
+public interface LessonRepository extends JpaRepository<Lesson, Long> {
+    List<Lesson> findByCourse_CourseId(Long courseId);
+    Page<Lesson> findAll(Pageable pageable);
 }
