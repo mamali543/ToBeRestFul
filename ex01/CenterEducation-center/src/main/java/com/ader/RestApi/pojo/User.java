@@ -8,9 +8,9 @@ import lombok.Setter;
 import lombok.AllArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-// import org.springframework.security.core.GrantedAuthority;
-// import org.springframework.security.core.authority.SimpleGrantedAuthority;
-// import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,7 +23,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonPropertyOrder({ "userId", "firstName", "lastName", "login", "password", "role" })
-public class User {
+public class User implements UserDetails {
     
     @Id // Marks this field as the primary key of the entity
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-generates values for this field using database identity column
@@ -60,33 +60,33 @@ public class User {
     private List<Lesson> lessons = new ArrayList<>();
 
     // Spring Security methods
-    // @Override
-    // public Collection<? extends GrantedAuthority> getAuthorities() {
-    //     return Collections.singleton(new SimpleGrantedAuthority(role.name()));
-    // }
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singleton(new SimpleGrantedAuthority(role.name()));
+    }
 
-    // @Override
-    // public String getUsername() {
-    //     return login;
-    // }
+    @Override
+    public String getUsername() {
+        return login;
+    }
 
-    // @Override
-    // public boolean isAccountNonExpired() {
-    //     return true;
-    // }
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
-    // @Override
-    // public boolean isAccountNonLocked() {
-    //     return true;
-    // }
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
-    // @Override
-    // public boolean isCredentialsNonExpired() {
-    //     return true;
-    // }
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
-    // @Override
-    // public boolean isEnabled() {
-    //     return true;
-    // }
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
