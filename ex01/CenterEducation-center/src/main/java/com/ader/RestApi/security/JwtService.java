@@ -44,6 +44,7 @@ public class JwtService {
     private Date extractExpiration(String jwt) {
         return extractClaim(jwt, Claims::getExpiration);
     }
+
     /**
      * Generic method to extract a claim from the JWT token
      * 
