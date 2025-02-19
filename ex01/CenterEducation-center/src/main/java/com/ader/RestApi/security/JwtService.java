@@ -13,6 +13,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import com.ader.RestApi.pojo.User;
 
 /**
  * Service class for handling JWT (JSON Web Token) operations
@@ -89,7 +90,15 @@ public class JwtService {
      * @return Generated JWT token
      */
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        // Assuming userDetails is your User entity with these fields
+        User user = (User) userDetails;
+
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("userId", user.getUserId()); // Add user ID
+        extraClaims.put("role", user.getRole()); // Add user role
+        extraClaims.put("login", user.getLogin()); // Add user login
+
+        return generateToken(extraClaims, userDetails);
     }
 
     /**
@@ -100,11 +109,13 @@ public class JwtService {
      * @return Generated JWT token
      */
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        // A valid token for 24 hours
-        return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
+        return Jwts.builder()
+                .setClaims(extraClaims) // Set the extra claims
+                .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256).compact();
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     /**
@@ -127,5 +138,17 @@ public class JwtService {
      */
     private boolean isTokenExpired(String jwt) {
         return extractExpiration(jwt).before(new Date());
+    }
+
+    public String extractUserId(String token) {
+        return extractClaim(token, claims -> claims.get("userId", String.class));
+    }
+
+    public String extractUserRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
+    }
+
+    public String extractUserLogin(String token) {
+        return extractClaim(token, claims -> claims.get("login", String.class));
     }
 }
