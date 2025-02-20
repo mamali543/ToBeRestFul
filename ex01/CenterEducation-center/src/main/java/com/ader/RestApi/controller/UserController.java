@@ -1,12 +1,11 @@
 package com.ader.RestApi.controller;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.PageRequest;         
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,20 +20,18 @@ import com.ader.RestApi.pojo.User;
 import com.ader.RestApi.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
+import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/users")
+@AllArgsConstructor
 @Tag(name = "User Controller", description = "Endpoints for managing users")
 public class UserController {
 
     private final UserService userService;
 
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
+    // The @PreAuthorize annotations method level security work with the role information stored in your JWT token
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get all users")
     public ResponseEntity<Page<User>> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
@@ -45,12 +42,14 @@ public class UserController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Create a new user")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         return ResponseEntity.ok(userService.createUser(user));
     }
 
     @GetMapping("/{userId}")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get a user by ID")
     public ResponseEntity<User> getUserById(@PathVariable Long userId) {
         return userService.getUserById(userId)
@@ -59,6 +58,7 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Update a user")
     public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody User user) {
         user.setUserId(userId);
@@ -66,6 +66,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Delete a user")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);

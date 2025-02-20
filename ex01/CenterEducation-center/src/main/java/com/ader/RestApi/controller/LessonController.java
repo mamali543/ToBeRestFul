@@ -1,35 +1,34 @@
 package com.ader.RestApi.controller;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.ader.RestApi.dto.LessonDto;
 import com.ader.RestApi.pojo.Lesson;
 import com.ader.RestApi.service.LessonService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/lessons")
+@AllArgsConstructor
 @Tag(name = "Lesson Controller", description = "Endpoints for managing lessons")
 public class LessonController {
     private final LessonService lessonService;
 
-    @Autowired
-    public LessonController(LessonService lessonService) {
-        this.lessonService = lessonService;
-    }
-
     @PostMapping
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Create a new lesson")
     public ResponseEntity<Lesson> createLesson(@RequestBody LessonDto lessonDto) {
         return ResponseEntity.ok(lessonService.createLesson(lessonDto));
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get all lessons with pagination")
     public ResponseEntity<Page<Lesson>> getAllLessons(
             @RequestParam(defaultValue = "0") int page,
@@ -38,6 +37,7 @@ public class LessonController {
     }
 
     @GetMapping("/{lessonId}")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get a lesson by ID")
     public ResponseEntity<Lesson> getLessonById(@PathVariable Long lessonId) {
         return lessonService.getLessonById(lessonId)
@@ -46,12 +46,14 @@ public class LessonController {
     }
 
     @GetMapping("/course/{courseId}")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get all lessons for a specific course")
     public ResponseEntity<List<Lesson>> getLessonsByCourseId(@PathVariable Long courseId) {
         return ResponseEntity.ok(lessonService.getLessonsByCourseId(courseId));
     }
 
     @PutMapping("/{lessonId}")
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Update a lesson")
     public ResponseEntity<Lesson> updateLesson(
             @PathVariable Long lessonId,
@@ -60,6 +62,7 @@ public class LessonController {
     }
 
     @DeleteMapping("/{lessonId}")
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Delete a lesson")
     public ResponseEntity<Void> deleteLesson(@PathVariable Long lessonId) {
         lessonService.deleteLesson(lessonId);

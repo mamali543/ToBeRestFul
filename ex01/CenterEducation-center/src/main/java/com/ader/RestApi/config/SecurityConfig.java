@@ -2,6 +2,7 @@ package com.ader.RestApi.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,25 +22,32 @@ import lombok.RequiredArgsConstructor;
  * configurations
  */
 public class SecurityConfig {
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final AuthenticationProvider authenticationProvider;
+        private final JwtAuthenticationFilter jwtAuthenticationFilter;
+        private final AuthenticationProvider authenticationProvider;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("auth/**").permitAll()
-                        .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/swagger-ui.html").permitAll()
-                        .requestMatchers("/api-docs/**").permitAll()
-                        .requestMatchers("/v3/api-docs/**").permitAll()
-                        .anyRequest()
-                        .authenticated())
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                http
+                                .csrf(csrf -> csrf.disable())
+                                .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers("/auth/**").permitAll()
+                                                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**",
+                                                                "/v3/api-docs/**")
+                                                .permitAll()
+                                                // Optional: Add URL-based role restrictions,  URL-based security in SecurityConfig
+                                                .requestMatchers(HttpMethod.GET, "/**").authenticated()
+                                                .requestMatchers(HttpMethod.POST, "/**").hasAuthority("ADMINISTRATOR")
+                                                .requestMatchers(HttpMethod.PUT, "/**").hasAuthority("ADMINISTRATOR")
+                                                .requestMatchers(HttpMethod.DELETE, "/**").hasAuthority("ADMINISTRATOR")
+                                                .anyRequest().authenticated())
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .authenticationProvider(authenticationProvider)
+                                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                return http.build();
+        }
 }
+
+// 1. URL-based security in SecurityConfig
+// 2. Method-level security with @PreAuthorize annotations
+// The combination of both provides robust security, allowing you to control access to different parts of your application based on both the URL and the user's role.

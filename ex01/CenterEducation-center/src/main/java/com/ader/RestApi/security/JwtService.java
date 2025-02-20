@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Claims;
@@ -23,8 +24,8 @@ import com.ader.RestApi.pojo.User;
 @Service
 public class JwtService {
 
-    /** Secret key used for signing JWTs */
-    private static final String SECRET_KEY = "4iSpEg/EnSthq/CkF5qk0x049yVUrCS5A1h+yCOPrqNi+MElXyKr2WitOA0KhrMS";
+    @Value("${spring.jwt.secret.key}")
+    private String secretKey;
 
     /**
      * Extracts the username from a JWT token
@@ -79,7 +80,7 @@ public class JwtService {
      * @return The signing key
      */
     private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -90,14 +91,12 @@ public class JwtService {
      * @return Generated JWT token
      */
     public String generateToken(UserDetails userDetails) {
-        // Assuming userDetails is your User entity with these fields
         User user = (User) userDetails;
-
         Map<String, Object> extraClaims = new HashMap<>();
-        extraClaims.put("userId", user.getUserId()); // Add user ID
-        extraClaims.put("role", user.getRole()); // Add user role
-        extraClaims.put("login", user.getLogin()); // Add user login
-
+        extraClaims.put("userId", user.getUserId());
+        extraClaims.put("role", user.getRole());
+        extraClaims.put("login", user.getLogin());
+        // Good: Stores essential user info in token
         return generateToken(extraClaims, userDetails);
     }
 
@@ -140,14 +139,32 @@ public class JwtService {
         return extractExpiration(jwt).before(new Date());
     }
 
+    /**
+     * Extracts the user ID from a JWT token.
+     * 
+     * @param token The JWT token from which to extract the user ID.
+     * @return The user ID as a string.
+     */
     public String extractUserId(String token) {
         return extractClaim(token, claims -> claims.get("userId", String.class));
     }
 
+    /**
+     * Extracts the user role from a JWT token.
+     * 
+     * @param token The JWT token from which to extract the user role.
+     * @return The user role as a string.
+     */
     public String extractUserRole(String token) {
         return extractClaim(token, claims -> claims.get("role", String.class));
     }
 
+    /**
+     * Extracts the user login from a JWT token.
+     * 
+     * @param token The JWT token from which to extract the user login.
+     * @return The user login as a string.
+     */
     public String extractUserLogin(String token) {
         return extractClaim(token, claims -> claims.get("login", String.class));
     }
