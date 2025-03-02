@@ -37,6 +37,7 @@ public class UserController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "userId") String sort) {
+        System.out.println("getAllUsers");
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
         return ResponseEntity.ok(userService.getAllUsers(pageable));
     }

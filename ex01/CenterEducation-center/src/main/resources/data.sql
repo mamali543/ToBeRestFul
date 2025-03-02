@@ -1,25 +1,28 @@
--- Insert sample users
+-- Create schema if it doesn't exist
+CREATE SCHEMA IF NOT EXISTS spring;
+
+-- Insert sample users with BCrypt encoded passwords
 INSERT INTO
     spring.users (
         first_name,
         last_name,
         login,
-        password,
+        password,  -- Passwords must be BCrypt encoded
         role
     )
 VALUES (
         'John',
         'Doe',
         'jdoe',
-        'password123',
-        1
+        '$2a$10$YourBCryptEncodedPasswordHere',  -- Use BCrypt encoded password
+        0
     ),
     (
         'Jane',
         'Smith',
         'jsmith',
-        'password456',
-        2
+        '$2a$10$YourBCryptEncodedPasswordHere',  -- Use BCrypt encoded password
+        1
     );
 
 -- Insert sample courses

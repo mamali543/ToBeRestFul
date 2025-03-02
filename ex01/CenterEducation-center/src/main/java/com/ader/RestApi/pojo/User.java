@@ -27,9 +27,10 @@ import java.util.List;
 @JsonPropertyOrder({ "userId", "firstName", "lastName", "login", "password", "role" })
 @Builder
 public class User implements UserDetails {
-    
+
     @Id // Marks this field as the primary key of the entity
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-generates values for this field using database identity column
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-generates values for this field using database identity
+                                                        // column
     @Column(name = "user_id") // Maps to the user_id column in the database table
     private Long userId; // Field to store the user's unique identifier
 
@@ -51,8 +52,10 @@ public class User implements UserDetails {
 
     // Relationships
     @JsonIgnore // Prevents infinite recursion when serializing to JSON
-    @ManyToMany(mappedBy = "students") // Indicates this is the inverse side of the many-to-many relationship defined in Course class
-    private List<Course> enrolledCourses = new ArrayList<>(); // List of courses that this user (as a student) is enrolled in
+    @ManyToMany(mappedBy = "students") // Indicates this is the inverse side of the many-to-many relationship defined
+                                       // in Course class
+    private List<Course> enrolledCourses = new ArrayList<>(); // List of courses that this user (as a student) is
+                                                              // enrolled in
 
     @JsonIgnore
     @ManyToMany(mappedBy = "teachers")
@@ -65,7 +68,7 @@ public class User implements UserDetails {
     // Spring Security methods
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(role.name()));
+        return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override

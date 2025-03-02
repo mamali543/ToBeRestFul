@@ -34,11 +34,12 @@ public class SecurityConfig {
                                                 .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**",
                                                                 "/v3/api-docs/**")
                                                 .permitAll()
-                                                // Optional: Add URL-based role restrictions,  URL-based security in SecurityConfig
+                                                // Optional: Add URL-based role restrictions, URL-based security in
+                                                // SecurityConfig
                                                 .requestMatchers(HttpMethod.GET, "/**").authenticated()
-                                                .requestMatchers(HttpMethod.POST, "/**").hasAuthority("ADMINISTRATOR")
-                                                .requestMatchers(HttpMethod.PUT, "/**").hasAuthority("ADMINISTRATOR")
-                                                .requestMatchers(HttpMethod.DELETE, "/**").hasAuthority("ADMINISTRATOR")
+                                                .requestMatchers(HttpMethod.POST, "/**").hasRole("ADMINISTRATOR")
+                                                .requestMatchers(HttpMethod.PUT, "/**").hasRole("ADMINISTRATOR")
+                                                .requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMINISTRATOR")
                                                 .anyRequest().authenticated())
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -50,4 +51,6 @@ public class SecurityConfig {
 
 // 1. URL-based security in SecurityConfig
 // 2. Method-level security with @PreAuthorize annotations
-// The combination of both provides robust security, allowing you to control access to different parts of your application based on both the URL and the user's role.
+// The combination of both provides robust security, allowing you to control
+// access to different parts of your application based on both the URL and the
+// user's role.

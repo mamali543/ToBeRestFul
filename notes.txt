@@ -3,3 +3,9 @@ Let me elaborate on this:
 
 Component Scanning:
 Spring's component scanning is a feature that automatically detects and registers Spring beans without requiring explicit bean declarations in XML or Java configuration.
+
+*spring data jpa : simplifies data access layer implementation by reducing boilerplate code,
+and it is a framework within the spring ecosystem dedicated to handle the communication between the objects model and the relational databases schema through object-relational-mapping
+uses hibernate as its default jpa implementation
+
+openssl rand -hex 32

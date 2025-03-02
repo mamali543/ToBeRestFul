@@ -3,6 +3,7 @@ package com.ader.RestApi.service;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.ader.RestApi.pojo.AuthenticationRequest;
 import com.ader.RestApi.pojo.AuthenticationResponse;
@@ -20,32 +21,33 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
+
     @Override
     public AuthenticationResponse register(RegisterRequest request) {
         var user = User.builder()
-            .firstName(request.getFirstName())
-            .lastName(request.getLastName())
-            .login(request.getLogin())
-            .password(request.getPassword())
-            .role(request.getRole())
-            .build();
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .login(request.getLogin())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(request.getRole())
+                .build();
         userRepository.save(user);
         String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
-            .token(jwtToken)
-            .build();
+                .token(jwtToken)
+                .build();
     }
 
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getLogin(), request.getPassword())
-        );
+                new UsernamePasswordAuthenticationToken(request.getLogin(), request.getPassword()));
         var user = userRepository.findByLogin(request.getLogin())
-            .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
         String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
-            .token(jwtToken)
-            .build();
+                .token(jwtToken)
+                .build();
     }
 }
