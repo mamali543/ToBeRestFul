@@ -15,6 +15,7 @@ import com.ader.RestApi.repositories.LessonRepository;
 import com.ader.RestApi.repositories.CourseRepository;
 import com.ader.RestApi.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class LessonServiceImpl implements LessonService {
@@ -24,7 +25,8 @@ public class LessonServiceImpl implements LessonService {
     private final CourseRepository courseRepository;
 
     @Autowired
-    public LessonServiceImpl(LessonRepository lessonRepository, UserRepository userRepository, CourseRepository courseRepository) {
+    public LessonServiceImpl(LessonRepository lessonRepository, UserRepository userRepository,
+            CourseRepository courseRepository) {
         this.lessonRepository = lessonRepository;
         this.userRepository = userRepository;
         this.courseRepository = courseRepository;
@@ -38,10 +40,10 @@ public class LessonServiceImpl implements LessonService {
     @Override
     public Lesson createLesson(LessonDto lessonDto) {
         User teacher = userRepository.findById(lessonDto.getTeacherId())
-            .orElseThrow(() -> new EntityNotFoundException("Teacher not found"));
-        
+                .orElseThrow(() -> new EntityNotFoundException("Teacher not found"));
+
         Course course = courseRepository.findById(lessonDto.getCourseId())
-            .orElseThrow(() -> new EntityNotFoundException("Course not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Course not found"));
 
         Lesson lesson = new Lesson();
         lesson.setStartTime(lessonDto.getStartTime());
@@ -59,21 +61,45 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
+    @Transactional
     public Lesson updateLesson(LessonDto lessonDto, Long lessonId) {
         Lesson lesson = lessonRepository.findById(lessonId)
-            .orElseThrow(() -> new EntityNotFoundException("Lesson not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Lesson not found"));
 
         User teacher = userRepository.findById(lessonDto.getTeacherId())
-            .orElseThrow(() -> new BadRequestException("Teacher not found"));
-        
+                .orElseThrow(() -> new BadRequestException("Teacher not found"));
+
         Course course = courseRepository.findById(lessonDto.getCourseId())
-            .orElseThrow(() -> new EntityNotFoundException("Course not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Course not found"));
+
+        // If teacher isn't associated with course, add them
+        if (!course.getTeachers().contains(teacher)) {
+            course.getTeachers().add(teacher);
+            teacher.getTaughtCourses().add(course);
+        }
+
+        // Check time conflicts with other lessons in the course
+        boolean hasConflict = course.getLessons().stream()
+                .filter(existingLesson -> !existingLesson.getLessonId().equals(lessonId)) // Exclude current lesson
+                .anyMatch(existingLesson -> existingLesson.getDayOfWeek().equals(lessonDto.getDayOfWeek()) &&
+                        (lessonDto.getStartTime().isBefore(existingLesson.getEndTime()) &&
+                                lessonDto.getEndTime().isAfter(existingLesson.getStartTime())));
+
+        if (hasConflict) {
+            throw new BadRequestException("Time conflict with existing lesson in the course");
+        }
+
+        // Remove from old course if changing courses
+        if (!lesson.getCourse().getCourseId().equals(course.getCourseId())) {
+            lesson.getCourse().getLessons().remove(lesson);
+        }
 
         lesson.setStartTime(lessonDto.getStartTime());
         lesson.setEndTime(lessonDto.getEndTime());
         lesson.setDayOfWeek(lessonDto.getDayOfWeek());
         lesson.setTeacher(teacher);
         lesson.setCourse(course);
+        course.getLessons().add(lesson);
 
         return lessonRepository.save(lesson);
     }

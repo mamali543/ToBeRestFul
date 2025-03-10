@@ -62,12 +62,10 @@ public class UserServiceImpl implements UserService {
             course.getTeachers().remove(user);
         }
 
-        // Delete lessons taught by this teacher
-        if ("TEACHER".equals(user.getRole())) {
-            lessonRepository.deleteByTeacher_UserId(userId);
-        }
+        // No need for explicit lesson deletion
+        // @OneToMany(mappedBy = "teacher", cascade = CascadeType.REMOVE)
+        // will handle this automatically
 
-        // Now we can safely delete the user
         userRepository.delete(user);
     }
 }

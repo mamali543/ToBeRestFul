@@ -170,59 +170,86 @@ public class CourseServiceImpl implements CourseService {
         }
         return lessonRepository.findByCourse_CourseId(courseId);
     }
-
+    // This method updates a lesson by course
     @Override
     public Lesson updateLessonByCourse(Long lessonId, LessonDto lessonDto) {
-        Course course = courseRepository.findById(lessonDto.getCourseId())
+        // Fetch the new course
+        Course newCourse = courseRepository.findById(lessonDto.getCourseId())
                 .orElseThrow(() -> new BadRequestException("Course not found"));
 
+        // Fetch the lesson to be updated
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new BadRequestException("Lesson not found"));
 
-        if (!lesson.getCourse().getCourseId().equals(course.getCourseId())) {
-            throw new BadRequestException("Lesson does not belong to this course");
+        // If the lesson is changing to a different course
+        if (!lesson.getCourse().getCourseId().equals(newCourse.getCourseId())) {
+            // Remove the lesson from the old course
+            lesson.getCourse().getLessons().remove(lesson);
+            // Add the lesson to the new course
+            lesson.setCourse(newCourse);
+            newCourse.getLessons().add(lesson);
         }
 
+        // Update the lesson details
         lesson.setStartTime(lessonDto.getStartTime());
         lesson.setEndTime(lessonDto.getEndTime());
         lesson.setDayOfWeek(lessonDto.getDayOfWeek());
 
+        // If a new teacher is specified
         if (lessonDto.getTeacherId() != null) {
+            // Fetch the teacher
             User teacher = userRepository.findById(lessonDto.getTeacherId())
                     .orElseThrow(() -> new BadRequestException("Teacher not found"));
+            // If the user is not a teacher, throw an exception
             if (teacher.getRole() != Role.TEACHER) {
                 throw new BadRequestException("User is not a teacher");
             }
+
+            // If the teacher is not associated with the new course, add them
+            if (!newCourse.getTeachers().contains(teacher)) {
+                newCourse.getTeachers().add(teacher);
+                teacher.getTaughtCourses().add(newCourse);
+            }
+
+            // Set the teacher for the lesson
             lesson.setTeacher(teacher);
         }
 
+        // Save and return the updated lesson
         return lessonRepository.save(lesson);
     }
 
     @Override
     public void deleteLessonByCourse(Long lessonId, Long courseId) {
+        // Fetch the lesson to be deleted
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new BadRequestException("Lesson not found"));
 
+        // Check if the lesson belongs to the specified course
         if (!lesson.getCourse().getCourseId().equals(courseId)) {
             throw new BadRequestException("Lesson does not belong to this course");
         }
 
+        // Remove the lesson from the database
         lessonRepository.delete(lesson);
     }
 
     @Override
     public User addStudentToCourse(Long studentId, Long courseId) {
+        // Fetch the course to which the student will be added
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new BadRequestException("Course not found"));
 
+        // Fetch the student to be added
         User student = userRepository.findById(studentId)
                 .orElseThrow(() -> new BadRequestException("Student not found"));
 
+        // Check if the user is a student
         if (student.getRole() != Role.STUDENT) {
             throw new BadRequestException("User is not a student");
         }
 
+        // Add the student to the course
         course.getStudents().add(student);
         courseRepository.save(course);
         return student;
@@ -230,6 +257,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<User> getStudentsByCourseId(Long courseId) {
+        // Fetch the course to get its students
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new BadRequestException("Course not found"));
         return course.getStudents();
@@ -237,28 +265,35 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public void deleteStudentFromCourse(Long studentId, Long courseId) {
+        // Fetch the course from which the student will be removed
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new BadRequestException("Course not found"));
 
+        // Fetch the student to be removed
         User student = userRepository.findById(studentId)
                 .orElseThrow(() -> new BadRequestException("Student not found"));
 
+        // Remove the student from the course
         course.getStudents().remove(student);
         courseRepository.save(course);
     }
 
     @Override
     public User addTeacherToCourse(Long teacherId, Long courseId) {
+        // Fetch the course to which the teacher will be added
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new BadRequestException("Course not found"));
 
+        // Fetch the teacher to be added
         User teacher = userRepository.findById(teacherId)
                 .orElseThrow(() -> new BadRequestException("Teacher not found"));
 
+        // Check if the user is a teacher
         if (teacher.getRole() != Role.TEACHER) {
             throw new BadRequestException("User is not a teacher");
         }
 
+        // Add the teacher to the course
         course.getTeachers().add(teacher);
         courseRepository.save(course);
         return teacher;
@@ -266,6 +301,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<User> getTeachersByCourseId(Long courseId) {
+        // Fetch the course to get its teachers
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new BadRequestException("Course not found"));
         return course.getTeachers();
@@ -273,13 +309,35 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public void deleteTeacherFromCourse(Long teacherId, Long courseId) {
+        // Fetch the course from which the teacher will be removed
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new BadRequestException("Course not found"));
 
+        // Fetch the teacher to be removed
         User teacher = userRepository.findById(teacherId)
                 .orElseThrow(() -> new BadRequestException("Teacher not found"));
 
+        // Remove the teacher from the course
         course.getTeachers().remove(teacher);
         courseRepository.save(course);
     }
+
+    // @Transactional
+    // public Lesson associateLessonWithCourse(Long courseId, Long lessonId) {
+    // Course course = courseRepository.findById(courseId)
+    // .orElseThrow(() -> new BadRequestException("Course not found"));
+
+    // Lesson lesson = lessonRepository.findById(lessonId)
+    // .orElseThrow(() -> new BadRequestException("Lesson not found"));
+
+    // // Check if lesson is already associated with another course
+    // if (lesson.getCourse() != null) {
+    // throw new BadRequestException("Lesson is already associated with a course");
+    // }
+
+    // lesson.setCourse(course);
+    // course.getLessons().add(lesson);
+
+    // return lessonRepository.save(lesson);
+    // }
 }
