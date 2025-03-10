@@ -14,7 +14,7 @@ VALUES (
         'John',
         'Doe',
         'jdoe',
-        '$2a$10$YourBCryptEncodedPasswordHere',  -- Use BCrypt encoded password
+        '$2y$10$A1XWYkZT6Fa6JF2a0SLFmuXLKYOo/9qqpwoHbqf9pgtWcI8MW52pS',  -- Use BCrypt encoded password
         0
     ),
     (

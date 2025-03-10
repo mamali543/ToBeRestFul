@@ -31,7 +31,8 @@ public class CourseServiceImpl implements CourseService {
     private final LessonRepository lessonRepository;
 
     @Autowired
-    public CourseServiceImpl(CourseRepository courseRepository, LessonRepository lessonRepository, UserRepository userRepository) {
+    public CourseServiceImpl(CourseRepository courseRepository, LessonRepository lessonRepository,
+            UserRepository userRepository) {
         this.courseRepository = courseRepository;
         this.lessonRepository = lessonRepository;
         this.userRepository = userRepository;
@@ -47,18 +48,18 @@ public class CourseServiceImpl implements CourseService {
         // 1. Save teachers
         if (course.getTeachers() != null) {
             List<User> savedTeachers = course.getTeachers().stream()
-                .map(teacher -> userRepository.findByLogin(teacher.getLogin())
-                    .orElseGet(() -> userRepository.save(teacher)))
-                .collect(Collectors.toList());
+                    .map(teacher -> userRepository.findByLogin(teacher.getLogin())
+                            .orElseGet(() -> userRepository.save(teacher)))
+                    .collect(Collectors.toList());
             course.setTeachers(savedTeachers);
         }
 
         // 2. Save students
         if (course.getStudents() != null) {
             List<User> savedStudents = course.getStudents().stream()
-                .map(student -> userRepository.findByLogin(student.getLogin())
-                    .orElseGet(() -> userRepository.save(student)))
-                .collect(Collectors.toList());
+                    .map(student -> userRepository.findByLogin(student.getLogin())
+                            .orElseGet(() -> userRepository.save(student)))
+                    .collect(Collectors.toList());
             course.setStudents(savedStudents);
         }
 
@@ -70,19 +71,19 @@ public class CourseServiceImpl implements CourseService {
         // 4. Save lessons with references to the saved course
         if (tempLessons != null) {
             List<Lesson> savedLessons = tempLessons.stream()
-                .map(lesson -> {
-                    // Find or save the teacher for this lesson
-                    User teacher = userRepository.findByLogin(lesson.getTeacher().getLogin())
-                        .orElseGet(() -> userRepository.save(lesson.getTeacher()));
-                    
-                    // Set the saved course and teacher
-                    lesson.setCourse(savedCourse);
-                    lesson.setTeacher(teacher);
-                    
-                    return lessonRepository.save(lesson);
-                })
-                .collect(Collectors.toList());
-            
+                    .map(lesson -> {
+                        // Find or save the teacher for this lesson
+                        User teacher = userRepository.findByLogin(lesson.getTeacher().getLogin())
+                                .orElseGet(() -> userRepository.save(lesson.getTeacher()));
+
+                        // Set the saved course and teacher
+                        lesson.setCourse(savedCourse);
+                        lesson.setTeacher(teacher);
+
+                        return lessonRepository.save(lesson);
+                    })
+                    .collect(Collectors.toList());
+
             // Update course with saved lessons
             savedCourse.setLessons(savedLessons);
         }
@@ -96,11 +97,40 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    @Transactional
     public Course updateCourse(Course course) {
-        if (!courseRepository.existsById(course.getCourseId())) {
-            throw new BadRequestException("Course not found with id: " + course.getCourseId());
+        Course existingCourse = courseRepository.findById(course.getCourseId())
+                .orElseThrow(() -> new BadRequestException("Course not found"));
+
+        // Update basic fields
+        existingCourse.setStartDate(course.getStartDate());
+        existingCourse.setEndDate(course.getEndDate());
+        existingCourse.setName(course.getName());
+        existingCourse.setDescription(course.getDescription());
+
+        // Update teachers
+        if (course.getTeachers() != null) {
+            existingCourse.setTeachers(course.getTeachers());
         }
-        return courseRepository.save(course);
+
+        // Update students
+        if (course.getStudents() != null) {
+            existingCourse.setStudents(course.getStudents());
+        }
+
+        // Update lessons
+        if (course.getLessons() != null) {
+            // Clear existing lessons
+            existingCourse.getLessons().clear();
+
+            // Add new lessons with proper course reference
+            course.getLessons().forEach(lesson -> {
+                lesson.setCourse(existingCourse); // Set the course reference
+                existingCourse.getLessons().add(lesson);
+            });
+        }
+
+        return courseRepository.save(existingCourse);
     }
 
     @Override
@@ -115,10 +145,10 @@ public class CourseServiceImpl implements CourseService {
     public Lesson addLessonToCourse(LessonDto lessonDto) {
         Course course = courseRepository.findById(lessonDto.getCourseId())
                 .orElseThrow(() -> new BadRequestException("Course not found"));
-        
+
         User teacher = userRepository.findById(lessonDto.getTeacherId())
                 .orElseThrow(() -> new BadRequestException("Teacher not found"));
-        
+
         if (teacher.getRole() != Role.TEACHER) {
             throw new BadRequestException("User is not a teacher");
         }
@@ -136,7 +166,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<Lesson> getLessonsByCourseId(Long courseId) {
         if (!courseRepository.existsById(courseId)) {
-                throw new BadRequestException("Course not found with id: " + courseId);
+            throw new BadRequestException("Course not found with id: " + courseId);
         }
         return lessonRepository.findByCourse_CourseId(courseId);
     }

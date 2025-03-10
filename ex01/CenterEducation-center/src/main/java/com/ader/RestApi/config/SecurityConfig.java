@@ -37,9 +37,9 @@ public class SecurityConfig {
                                                 // Optional: Add URL-based role restrictions, URL-based security in
                                                 // SecurityConfig
                                                 .requestMatchers(HttpMethod.GET, "/**").authenticated()
-                                                .requestMatchers(HttpMethod.POST, "/**").hasRole("ADMINISTRATOR")
-                                                .requestMatchers(HttpMethod.PUT, "/**").hasRole("ADMINISTRATOR")
-                                                .requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMINISTRATOR")
+                                                .requestMatchers(HttpMethod.POST, "/**").hasAuthority("ADMINISTRATOR")
+                                                .requestMatchers(HttpMethod.PUT, "/**").hasAuthority("ADMINISTRATOR")
+                                                .requestMatchers(HttpMethod.DELETE, "/**").hasAuthority("ADMINISTRATOR")
                                                 .anyRequest().authenticated())
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -54,3 +54,12 @@ public class SecurityConfig {
 // The combination of both provides robust security, allowing you to control
 // access to different parts of your application based on both the URL and the
 // user's role.
+
+//Session based authentication
+//JWT based authentication
+
+// stateful : the request share the same session context
+// stateless : the request is independent of each other
+
+// JWT is stateless
+// Session is stateful

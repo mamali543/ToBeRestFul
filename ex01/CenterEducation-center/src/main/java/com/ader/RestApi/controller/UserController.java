@@ -46,6 +46,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Create a new user")
     public ResponseEntity<User> createUser(@RequestBody User user) {
+        System.out.println("createUser");
         return ResponseEntity.ok(userService.createUser(user));
     }
 

@@ -34,26 +34,16 @@ public class Course {
     private String description;
 
     @ManyToMany
-    @JoinTable(
-        name = "course_teachers",
-        schema = "spring",
-        joinColumns = @JoinColumn(name = "course_id"),
-        inverseJoinColumns = @JoinColumn(name = "teacher_id")
-    )
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JoinTable(name = "course_teachers", schema = "spring", joinColumns = @JoinColumn(name = "course_id"), inverseJoinColumns = @JoinColumn(name = "teacher_id"))
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private List<User> teachers = new ArrayList<>();
 
     @ManyToMany
-    @JoinTable(
-        name = "course_students",
-        schema = "spring",
-        joinColumns = @JoinColumn(name = "course_id"),
-        inverseJoinColumns = @JoinColumn(name = "student_id")
-    )
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JoinTable(name = "course_students", schema = "spring", joinColumns = @JoinColumn(name = "course_id"), inverseJoinColumns = @JoinColumn(name = "student_id"))
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private List<User> students = new ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private List<Lesson> lessons = new ArrayList<>();
 }

@@ -27,13 +27,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        System.out.println("Request URL: " + request.getRequestURL());
-        System.out.println("Request Method: " + request.getMethod());
+        // System.out.println("Request URL: " + request.getRequestURL());
+        // System.out.println("Request Method: " + request.getMethod());
 
         // Print all headers
-        Collections.list(request.getHeaderNames()).forEach(headerName -> {
-            System.out.println(headerName + ": " + request.getHeader(headerName));
-        });
+        // Collections.list(request.getHeaderNames()).forEach(headerName -> {
+        //     System.out.println(headerName + ": " + request.getHeader(headerName));
+        // });
 
         try {
             final String authHeader = request.getHeader("Authorization");
@@ -48,6 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             jwt = authHeader.substring(7);
             // extract the user email from the jwt token
             userEmail = jwtService.extractUsername(jwt);
+            System.out.println("User email: " + userEmail);
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
                 System.out.println("User authorities: " + userDetails.getAuthorities()); // Debug line

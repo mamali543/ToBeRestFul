@@ -62,13 +62,13 @@ public class User implements UserDetails {
     private List<Course> taughtCourses = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "teacher")
+    @OneToMany(mappedBy = "teacher", cascade = CascadeType.REMOVE)
     private List<Lesson> lessons = new ArrayList<>();
 
     // Spring Security methods
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return Collections.singleton(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override

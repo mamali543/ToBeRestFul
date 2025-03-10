@@ -25,13 +25,15 @@ public class LessonServiceImpl implements LessonService {
     private final LessonRepository lessonRepository;
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
+
     /**
      * Constructs a new LessonServiceImpl with the specified LessonRepository.
      *
      * @param lessonRepository the repository to handle lesson data persistence
      */
     @Autowired
-    public LessonServiceImpl(LessonRepository lessonRepository, CourseRepository courseRepository, UserRepository userRepository) {
+    public LessonServiceImpl(LessonRepository lessonRepository, CourseRepository courseRepository,
+            UserRepository userRepository) {
         this.lessonRepository = lessonRepository;
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
@@ -62,7 +64,8 @@ public class LessonServiceImpl implements LessonService {
         Course course = courseRepository.findById(lessonDto.getCourseId())
                 .orElseThrow(() -> new BadRequestException("Course with id " + lessonDto.getCourseId() + " not found"));
         User user = userRepository.findById(lessonDto.getTeacherId())
-                .orElseThrow(() -> new BadRequestException("User with id " + lessonDto.getTeacherId() + " not found"));
+                .orElseThrow(
+                        () -> new BadRequestException("Teacher with id " + lessonDto.getTeacherId() + " not found"));
         return lessonRepository.saveDto(lessonDto);
     }
 
@@ -81,7 +84,7 @@ public class LessonServiceImpl implements LessonService {
      * Updates an existing lesson with the provided DTO data.
      *
      * @param lessonDto the DTO containing updated lesson data
-     * @param lesson_id  the ID of the lesson to update
+     * @param lesson_id the ID of the lesson to update
      * @return the updated lesson entity
      * @throws RuntimeException if the lesson with the given ID is not found
      */
