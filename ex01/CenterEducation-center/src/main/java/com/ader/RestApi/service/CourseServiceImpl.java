@@ -1,12 +1,10 @@
 package com.ader.RestApi.service;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,7 +28,6 @@ public class CourseServiceImpl implements CourseService {
     private final UserRepository userRepository;
     private final LessonRepository lessonRepository;
 
-    @Autowired
     public CourseServiceImpl(CourseRepository courseRepository, LessonRepository lessonRepository,
             UserRepository userRepository) {
         this.courseRepository = courseRepository;
@@ -38,6 +35,7 @@ public class CourseServiceImpl implements CourseService {
         this.userRepository = userRepository;
     }
 
+    /*  ---------------------------------      Managing Courses      ---------------------------------  */
     @Override
     public Page<Course> getAllCourses(Pageable pageable) {
         return courseRepository.findAll(pageable);
@@ -141,6 +139,7 @@ public class CourseServiceImpl implements CourseService {
         courseRepository.deleteById(id);
     }
 
+    /*  ---------------------------------      Managing course Lessons      --------------------------------- */
     @Override
     public Lesson addLessonToCourse(LessonDto lessonDto) {
         Course course = courseRepository.findById(lessonDto.getCourseId())
@@ -234,6 +233,7 @@ public class CourseServiceImpl implements CourseService {
         lessonRepository.delete(lesson);
     }
 
+    /*  ---------------------------------      Managing course Students      --------------------------------- */   
     @Override
     public User addStudentToCourse(Long studentId, Long courseId) {
         // Fetch the course to which the student will be added
@@ -278,6 +278,7 @@ public class CourseServiceImpl implements CourseService {
         courseRepository.save(course);
     }
 
+    /*  ---------------------------------      Managing course Teachers      --------------------------------- */
     @Override
     public User addTeacherToCourse(Long teacherId, Long courseId) {
         // Fetch the course to which the teacher will be added

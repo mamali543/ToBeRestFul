@@ -9,3 +9,18 @@ and it is a framework within the spring ecosystem dedicated to handle the commun
 uses hibernate as its default jpa implementation
 
 openssl rand -hex 32
+
+1. URL-based security in SecurityConfig
+2. Method-level security with @PreAuthorize annotations
+The combination of both provides robust security, allowing you to control
+access to different parts of your application based on both the URL and the
+user's role.
+
+Session based authentication
+JWT based authentication
+
+stateful : the request share the same session context
+stateless : the request is independent of each other
+
+JWT is stateless
+Session is stateful

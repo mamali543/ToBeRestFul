@@ -23,7 +23,15 @@ VALUES (
         'jsmith',
         '$2a$10$YourBCryptEncodedPasswordHere',  -- Use BCrypt encoded password
         1
-    );
+    ),
+    (
+        'mosan',
+        'mosan',
+        'mosani',
+        '$2a$10$YourBCryptEncodedPasswordHere',  -- Use BCrypt encoded password
+        2
+    )
+    ;
 
 -- Insert sample courses
 INSERT INTO
@@ -58,7 +66,7 @@ VALUES (
         '09:00:00',
         '10:30:00',
         'Monday',
-        1,
+        2,
         1
     ),
     (
@@ -72,11 +80,11 @@ VALUES (
 -- Insert sample course_students
 INSERT INTO
     spring.course_students (course_id, student_id)
-VALUES (1, 2),
-    (2, 1);
+VALUES (1, 3),
+    (2, 3);
 
 -- Insert sample course_teachers
 INSERT INTO
     spring.course_teachers (course_id, teacher_id)
-VALUES (1, 1),
+VALUES (1, 2),
     (2, 2);

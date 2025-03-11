@@ -55,8 +55,8 @@ public class SecurityConfig {
 // access to different parts of your application based on both the URL and the
 // user's role.
 
-//Session based authentication
-//JWT based authentication
+// Session based authentication
+// JWT based authentication
 
 // stateful : the request share the same session context
 // stateless : the request is independent of each other
