@@ -1,14 +1,31 @@
+                        Developing a quality API
+    In this project you will learn how to use Spring mechanisms to develop REST applications
+
+Preamble:
+    Levels of compliance of an application’s API to the REST architecture as per Richardson
+    model (each subsequent level is based on the previous one):
+    - Level 0. HTTP is used as a transport protocol. A single URI is used for all
+    interactions. All required information is passed in plain XML text.
+    - Level 1. The API uses a "resource" concept. Each resource is a separate business
+    object. Each resource has its own URI. All interactions are described by a single HTTP verb.
+    - Level 2. All interactions are described by an extended set of HTTP verbs: GET
+    (getting an entity), POST (adding a new entity), PUT (updating an existing entity), and
+    DELETE. Hence, a CRUD is defined for each resource.
+    - Level 3. The API is based on Hypermedia format.
+
+
+
+                          /*---------------------------------- Spring Component Scanning ----------------------------------*/
+
 Spring does indeed have a component scanning mechanism that scans your application's classes and automatically registers beans in the Spring container. This is a key feature of Spring's Inversion of Control (IoC) container.
 Let me elaborate on this:
 
 Component Scanning:
 Spring's component scanning is a feature that automatically detects and registers Spring beans without requiring explicit bean declarations in XML or Java configuration.
 
-*spring data jpa : simplifies data access layer implementation by reducing boilerplate code,
-and it is a framework within the spring ecosystem dedicated to handle the communication between the objects model and the relational databases schema through object-relational-mapping
-uses hibernate as its default jpa implementation
-
 openssl rand -hex 32
+
+                          /*---------------------------------- Spring Security ----------------------------------*/
 
 1. URL-based security in SecurityConfig
 2. Method-level security with @PreAuthorize annotations
@@ -24,3 +41,117 @@ stateless : the request is independent of each other
 
 JWT is stateless
 Session is stateful
+
+
+                          /*----------------------------------JDBC implementation vs Spring Data JPA ----------------------------------*/
+JDBC Implementation
+    1. Direct Database Interaction: JDBC (Java Database Connectivity) is indeed a low-level API that allows you to connect to a database and execute SQL queries directly. You have to manage the connection, execute queries, and handle results manually.
+    2. Connection Pooling: Using a connection pool like HikariCP is a good practice to manage database connections efficiently. It helps in reusing connections rather than creating a new one for every request, which can be resource-intensive.
+    3. Manual SQL Queries: You need to write raw SQL queries, which can lead to more boilerplate code and potential SQL injection vulnerabilities if not handled properly.
+    4. Schema Definition: Creating a schema.sql file to define your tables and relationships is a common practice in JDBC, as you need to set up the database schema manually.
+    5. Object Mapping: You have to manually map the result set to your Java objects, which can be tedious and error-prone.
+
+Spring Data JPA
+    1. Abstraction Layer: Spring Data JPA provides a higher-level abstraction over JDBC, allowing you to interact with the database using Java objects rather than raw SQL.
+    2. Reduced Boilerplate Code: It significantly reduces the amount of boilerplate code you need to write. You can define repository interfaces, and Spring Data JPA will automatically implement them for you.
+    3. ORM (Object-Relational Mapping): With JPA (Java Persistence API), you can use annotations to define how your Java objects map to database tables. This is done using an ORM framework like Hibernate, which handles the mapping and querying for you.
+    Automatic Configuration: Spring Data JPA automatically configures the data source and manages the entity lifecycle, which simplifies the setup process.
+    5. Query Methods: You can define query methods in your repository interfaces, and Spring Data JPA will generate the necessary SQL queries based on the method names, which is much easier than writing SQL manually.
+Summary
+    JDBC is more manual and requires more boilerplate code, while Spring Data JPA abstracts much of that complexity away, allowing for cleaner and more maintainable code.
+    Spring Data JPA leverages annotations and reflection to simplify the mapping of Java objects to database tables, whereas JDBC requires explicit SQL and manual mapping.
+    
+*spring data jpa : simplifies data access layer implementation by reducing boilerplate code,
+and it is a framework within the spring ecosystem dedicated to handle the communication between the objects model and the relational databases schema through object-relational-mapping
+uses hibernate as its default jpa implementation
+
+
+thank u now i want u to inspect my folders ex00 and ex01 okey? if u did so tell me that in the answer
+then u have to review the subject i will gave u now for the next exercise cause we gonna proceed in the implementattion of it, here is  the subject:
+Exercice 03 : HATEOAS
+Exercise 03
+HATEOAS
+Turn-in directory : ex03/
+Files to turn in : Education Center-folder
+Allowed functions : n/a
+Now, let us implement the functionality of a training center using Spring Data REST
+technology. Thus, the entire API for User, Course, and Lesson entities will be presented
+in Hipermedia format. E.g., for a /course GET request, the following response will be
+returned:
+{
+"_embedded": {
+"courses": [
+{
+"title": "Spring Data Rest",
+"description": "Best framework",
+"state": "Published",
+"\_links": {
+"self": {
+"href": "http://localhost/courses/1"
+},
+"course": {
+"href": "http://localhost/courses/1"
+},
+"lessons": {
+"href": "http://localhost/courses/1/lessons"
+},
+"students": {
+"href": "http://localhost/courses/1/students"
+}
+}
+},
+{
+"title": "SQL",
+"description": "All about RDBMS",
+"state": "Draft",
+"_links": {
+"self": {
+"href": "http://localhost/courses/2"
+},
+"course": {
+"href": "http://localhost/courses/2"
+},
+"publish": {
+11
+To be RESTful Developing a quality API
+"href": "http://localhost/courses/2/publish"
+},
+"lessons": {
+"href": "http://localhost/courses/2/lessons"
+},
+"students": {
+"href": "http://localhost/courses/2/students"
+}
+}
+}
+]
+},
+"_links": {
+"self": {
+"href": "http://localhost/courses"
+},
+"profile": {
+"href": "http://localhost/profile/courses"
+},
+"search": {
+"href": "http://localhost/courses/search"
+}
+},
+"page": {
+"size": 20,
+"totalElements": 2,
+"totalPages": 1,
+"number": 0
+}
+}
+As you can see from the example, for Course entity you need to implement the ability
+to publish with /courses/2/publish POST request.
+A course in the DRAFT state may be published. Once published, it is switched to
+PUBLISHED state and cannot be re-published.
+An ability to work with API through HAL Browser shall be provided.
+You also need to provide auto-generation of adoc documentation for the course
+publishing method based on a unit test of this method.
+An example of such documentation:
+
+reviw it very well cause i want to implement it, note that i have never done something like that i want u to describe the steps that we are going to pass through give me examples analogies and why doing such thing is beneficial for us what's the difference betwin it and the traditional implementation .
+i need all these this details cause i wanna understand very well and be able to explain it an an easy way for other people. thank you
