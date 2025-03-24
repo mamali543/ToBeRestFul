@@ -34,7 +34,7 @@ access to different parts of your application based on both the URL and the
 user's role.
 
 Session based authentication
-JWT based authentication
+JWT based authentication and role-based access control (RBAC). 
 
 stateful : the request share the same session context
 stateless : the request is independent of each other
@@ -42,6 +42,7 @@ stateless : the request is independent of each other
 JWT is stateless
 Session is stateful
 
+jwtService.extractUsername(jwt) knows to extract the login field because When generating the token, we set the subject of the JWT to userDetails.getUsername()
 
                           /*----------------------------------JDBC implementation vs Spring Data JPA ----------------------------------*/
 JDBC Implementation
@@ -65,93 +66,50 @@ Summary
 and it is a framework within the spring ecosystem dedicated to handle the communication between the objects model and the relational databases schema through object-relational-mapping
 uses hibernate as its default jpa implementation
 
+                                /******************************************************************** Prevent malicious attacks **********************************************************************\
 
-thank u now i want u to inspect my folders ex00 and ex01 okey? if u did so tell me that in the answer
-then u have to review the subject i will gave u now for the next exercise cause we gonna proceed in the implementattion of it, here is  the subject:
-Exercice 03 : HATEOAS
-Exercise 03
-HATEOAS
-Turn-in directory : ex03/
-Files to turn in : Education Center-folder
-Allowed functions : n/a
-Now, let us implement the functionality of a training center using Spring Data REST
-technology. Thus, the entire API for User, Course, and Lesson entities will be presented
-in Hipermedia format. E.g., for a /course GET request, the following response will be
-returned:
-{
-"_embedded": {
-"courses": [
-{
-"title": "Spring Data Rest",
-"description": "Best framework",
-"state": "Published",
-"\_links": {
-"self": {
-"href": "http://localhost/courses/1"
-},
-"course": {
-"href": "http://localhost/courses/1"
-},
-"lessons": {
-"href": "http://localhost/courses/1/lessons"
-},
-"students": {
-"href": "http://localhost/courses/1/students"
-}
-}
-},
-{
-"title": "SQL",
-"description": "All about RDBMS",
-"state": "Draft",
-"_links": {
-"self": {
-"href": "http://localhost/courses/2"
-},
-"course": {
-"href": "http://localhost/courses/2"
-},
-"publish": {
-11
-To be RESTful Developing a quality API
-"href": "http://localhost/courses/2/publish"
-},
-"lessons": {
-"href": "http://localhost/courses/2/lessons"
-},
-"students": {
-"href": "http://localhost/courses/2/students"
-}
-}
-}
-]
-},
-"_links": {
-"self": {
-"href": "http://localhost/courses"
-},
-"profile": {
-"href": "http://localhost/profile/courses"
-},
-"search": {
-"href": "http://localhost/courses/search"
-}
-},
-"page": {
-"size": 20,
-"totalElements": 2,
-"totalPages": 1,
-"number": 0
-}
-}
-As you can see from the example, for Course entity you need to implement the ability
-to publish with /courses/2/publish POST request.
-A course in the DRAFT state may be published. Once published, it is switched to
-PUBLISHED state and cannot be re-published.
-An ability to work with API through HAL Browser shall be provided.
-You also need to provide auto-generation of adoc documentation for the course
-publishing method based on a unit test of this method.
-An example of such documentation:
+1. HTTPS (Baseline Protection)
+    How It Works:
+        Ensure all requests use HTTPS, which encrypts the request body and headers and URL in transit.
+Use HTTPS and consider 2FA for critical operations.
+one-time-use, transaction-specific JWT
 
-reviw it very well cause i want to implement it, note that i have never done something like that i want u to describe the steps that we are going to pass through give me examples analogies and why doing such thing is beneficial for us what's the difference betwin it and the traditional implementation .
-i need all these this details cause i wanna understand very well and be able to explain it an an easy way for other people. thank you
+2. Sign the Initiate Request Payload
+    How It Works:
+    The client signs the request body ({"toWallet": "walletX", "amount": "y"}) using a secret key or a key derived from the session JWT, and includes the signature in a header (e.g., X-Request-Signature).
+
+    Example:
+    Request body: {"toWallet": "walletX", "amount": "y"}
+
+    Signature: HMAC-SHA256(body, session-jwt-secret)
+
+    Request:
+    http
+
+    POST /transfer/initiate
+    Authorization: Bearer <session-jwt>
+    X-Request-Signature: <signature>
+    Content-Type: application/json
+    {
+    "toWallet": "walletX",
+    "amount": "y"
+    }
+
+    The server:
+    Recomputes the signature using the same secret key and the received body.
+
+    Compares it to X-Request-Signature.
+
+    Rejects the request if they don’t match.
+
+3. Client-Side Confirmation Before Submission
+    How It Works:
+    After receiving the transaction-specific JWT from /transfer/initiate, the client displays a confirmation screen to the user (e.g., “Confirm transfer of y to walletX?”) before submitting the final /transfer request.
+
+    The user must explicitly approve the details, which are pulled from the transaction JWT, not the original request.
+
+    Why It Prevents Tampering:
+    Even if the attacker changes toWallet=walletX to walletZ in the initial request, the client app will display walletZ in the confirmation (since it’s in the returned JWT). The user will notice the discrepancy and reject the transfer.
+
+
+
