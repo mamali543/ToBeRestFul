@@ -102,7 +102,7 @@ one-time-use, transaction-specific JWT
 
     Rejects the request if they don’t match.
 
-3. Client-Side Confirmation Before Submission
+3. Client-Side Confirmation Before Submission or 2FA
     How It Works:
     After receiving the transaction-specific JWT from /transfer/initiate, the client displays a confirmation screen to the user (e.g., “Confirm transfer of y to walletX?”) before submitting the final /transfer request.
 
@@ -112,4 +112,15 @@ one-time-use, transaction-specific JWT
     Even if the attacker changes toWallet=walletX to walletZ in the initial request, the client app will display walletZ in the confirmation (since it’s in the returned JWT). The user will notice the discrepancy and reject the transfer.
 
 
+                                /******************************************************************** H2 Database **********************************************************************\
 
+H2 is an in-memory database that runs within your application’s JVM, unlike server-based databases like MySQL or PostgreSQL, which run as separate processes and store data persistently on disk. H2’s benefits include fast performance for testing and development due to its in-memory nature, lightweight setup with no external server required, and easy integration for temporary or embedded use cases.
+
+                                /******************************************************************** SPRING data Rest **********************************************************************\
+
+-SPRING data Rest is a framework withing the spring boot ecosystem that exposes your repository as a rest api for CRUD operations without the need of writing any controller or service classes.
+    Example: A UserRepository becomes GET/POST/PUT/DELETE /users endpoints.
+-Uses HATEOAS by default
+    -Responses include hypermedia links (e.g., _links) for discoverability.
+-Handles requests directly
+    Bypasses your custom controllers → Talks straight to the Repository and database.
