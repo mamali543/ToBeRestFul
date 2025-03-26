@@ -1,15 +1,7 @@
 package com.ader.RestApi.service;
 
-import com.ader.RestApi.pojo.User;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import java.util.Optional;
-
 public interface UserService {
-    Page<User> getAllUsers(Pageable pageable);
-    User createUser(User user);
-    Optional<User> getUserById(Long id);
-    User updateUser(User user);
-    // User saveUser(User user);
+    // Remove getAllUsers, createUser, getUserById, updateUser
+    // Keep only the delete method which has custom logic
     void deleteUser(Long id);
 }

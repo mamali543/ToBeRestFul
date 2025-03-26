@@ -23,9 +23,17 @@ Let me elaborate on this:
 Component Scanning:
 Spring's component scanning is a feature that automatically detects and registers Spring beans without requiring explicit bean declarations in XML or Java configuration.
 
+1. Spring Container = Application Context: This is the core container that manages the lifecycle of beans and provides dependency injection.
+2. Component Scanning: Spring's component scanning mechanism searches your application's packages for classes annotated with stereotypes like @Component, @Service, @Repository, etc.
+3. Bean Registration: When Spring finds these annotated classes during component scanning, it registers them as beans in the Application Context (the container).
+4. Dependency Injection: The container then handles injecting these beans where needed based on @Autowired annotations or constructor injection.
 openssl rand -hex 32
 
                           /*---------------------------------- Spring Security ----------------------------------*/
+first of all Spring security is a framework withing the spring ecosystem that handles authentication authorization and all security features for the application how's that:
+when a client send a request to the server before dispatching it to the controller it has to pass from several filters these filters performs security checks on the request , i implemented a jwtFilter which checks the availability of the jwt token if not found it rejects the request with a client error response otherwise the request goes to the authentication manager which is an interface responsible for authenticating the user its default implementation is provider manager which relies on different providers
+i choose DAO provider that uses bcryptPassword Encoder and userdetails these objects are used to authenticate the user and verify if the request sender is who claims to be and checks the expiration date of the token if it's still valid or not after the authentication succeeds we update the contextHolderManager which is like a box where we set the user authentication if the auth succeeds we add the user to it otherwise we don't then the request can pass to the dispatcher servlet.
+also we have an essential component that spring application look for it in the startup which is the SecurityFilterChain bean and it is responsible for all the security configuration for our app where u define the urls permitted and urls that has to be accessed with specified roles (urls based security) also where we specify the authentication Manager ,the filter to be executed which is in our case JwtFilter and the how to manage the user session.
 
 1. URL-based security in SecurityConfig
 2. Method-level security with @PreAuthorize annotations

@@ -4,6 +4,7 @@
         "HATEOAS",
         "Hikari",
         "JDBC",
-        "mosan"
+        "mosan",
+        "userdetails"
     ]
 }

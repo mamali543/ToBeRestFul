@@ -5,6 +5,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 
 @Configuration
 @EnableMethodSecurity
-// Enable method-level security
 public class MethodSecurityConfig {
+    // Enable method-level security
 }
