@@ -12,6 +12,7 @@ import com.ader.RestApi.pojo.Lesson;
 
 //This RestConfig class configures how Spring Data REST behaves in your application
 @Configuration
+//@Configuration: Tells Spring this is a configuration class that provides beans to the application context
 public class RestConfig {
 
     @Bean

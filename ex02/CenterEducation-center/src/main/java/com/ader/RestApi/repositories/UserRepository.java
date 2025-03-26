@@ -12,8 +12,9 @@ import java.util.Optional;
 
 @RepositoryRestResource(path = "users")
 public interface UserRepository extends JpaRepository<User, Long> {
+    //However, the method will still be available for use in your service classes, security configuration, or anywhere else in your application code where you need 
+    //to look up a user by their login. This is a common pattern - having repository methods that are used internally by your application logic but aren't exposed as API endpoints.
     Optional<User> findByLogin(String login);
-    // Optional<User> findByLogin(String username);
     
     // Secure findAll (GET /users) - Only authenticated users
     @Override

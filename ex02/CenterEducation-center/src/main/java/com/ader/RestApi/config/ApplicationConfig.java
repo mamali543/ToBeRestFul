@@ -15,6 +15,7 @@ import com.ader.RestApi.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
+//@Configuration: Tells Spring this is a configuration class that provides beans to the application context
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
