@@ -13,18 +13,21 @@ import com.ader.RestApi.pojo.User;
 import com.ader.RestApi.service.CourseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/courses")
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Tag(name = "Course Controller", description = "Endpoints for managing courses")
 public class CourseController {
 
     private final CourseService courseService;
 
-    /*  ---------------------------------      Managing Courses      ---------------------------------  */
+    /*
+     * --------------------------------- Managing Courses
+     * ---------------------------------
+     */
     // GET endpoints - accessible by all authenticated users
     @GetMapping
     @PreAuthorize("isAuthenticated()")
@@ -70,7 +73,10 @@ public class CourseController {
         return ResponseEntity.noContent().build();
     }
 
-    /*  ---------------------------------      Managing course Lessons      --------------------------------- */
+    /*
+     * --------------------------------- Managing course Lessons
+     * ---------------------------------
+     */
     // Lesson Management
     @PostMapping("/{courseId}/lessons")
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
@@ -110,7 +116,10 @@ public class CourseController {
         return ResponseEntity.noContent().build();
     }
 
-    /*  ---------------------------------      Managing course Students      --------------------------------- */
+    /*
+     * --------------------------------- Managing course Students
+     * ---------------------------------
+     */
     // Student Management
     @PostMapping("/{courseId}/students/{studentId}")
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
@@ -137,7 +146,11 @@ public class CourseController {
         courseService.deleteStudentFromCourse(studentId, courseId);
         return ResponseEntity.noContent().build();
     }
-    /*  ---------------------------------      Managing course Teachers      --------------------------------- */
+
+    /*
+     * --------------------------------- Managing course Teachers
+     * ---------------------------------
+     */
     // Teacher Management
     @PostMapping("/{courseId}/teachers/{teacherId}")
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
@@ -165,14 +178,15 @@ public class CourseController {
         return ResponseEntity.noContent().build();
     }
 
-    /*associate existing lesson with a course*/
+    /* associate existing lesson with a course */
     // @PostMapping("/{courseId}/lessons/{lessonId}")
     // @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     // @Operation(summary = "Associate an existing lesson with a course")
     // public ResponseEntity<Lesson> associateLessonWithCourse(
-    //         @PathVariable Long courseId,
-    //         @PathVariable Long lessonId) {
-    //     return ResponseEntity.ok(courseService.associateLessonWithCourse(courseId, lessonId));
+    // @PathVariable Long courseId,
+    // @PathVariable Long lessonId) {
+    // return ResponseEntity.ok(courseService.associateLessonWithCourse(courseId,
+    // lessonId));
     // }
 
 }

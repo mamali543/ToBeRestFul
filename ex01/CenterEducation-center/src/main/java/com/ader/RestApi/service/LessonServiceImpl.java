@@ -2,7 +2,6 @@ package com.ader.RestApi.service;
 
 import java.util.List;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,23 +13,18 @@ import com.ader.RestApi.pojo.User;
 import com.ader.RestApi.repositories.LessonRepository;
 import com.ader.RestApi.repositories.CourseRepository;
 import com.ader.RestApi.repositories.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class LessonServiceImpl implements LessonService {
 
     private final LessonRepository lessonRepository;
     private final UserRepository userRepository;
     private final CourseRepository courseRepository;
-
-    @Autowired
-    public LessonServiceImpl(LessonRepository lessonRepository, UserRepository userRepository,
-            CourseRepository courseRepository) {
-        this.lessonRepository = lessonRepository;
-        this.userRepository = userRepository;
-        this.courseRepository = courseRepository;
-    }
 
     @Override
     public Page<Lesson> getAllLessons(Pageable pageable) {
@@ -40,10 +34,10 @@ public class LessonServiceImpl implements LessonService {
     @Override
     public Lesson createLesson(LessonDto lessonDto) {
         User teacher = userRepository.findById(lessonDto.getTeacherId())
-                .orElseThrow(() -> new EntityNotFoundException("Teacher not found"));
+                .orElseThrow(() -> new BadRequestException("Teacher not found"));
 
         Course course = courseRepository.findById(lessonDto.getCourseId())
-                .orElseThrow(() -> new EntityNotFoundException("Course not found"));
+                .orElseThrow(() -> new BadRequestException("Course not found"));
 
         Lesson lesson = new Lesson();
         lesson.setStartTime(lessonDto.getStartTime());
@@ -64,13 +58,13 @@ public class LessonServiceImpl implements LessonService {
     @Transactional
     public Lesson updateLesson(LessonDto lessonDto, Long lessonId) {
         Lesson lesson = lessonRepository.findById(lessonId)
-                .orElseThrow(() -> new EntityNotFoundException("Lesson not found"));
+                .orElseThrow(() -> new BadRequestException("Lesson not found"));
 
         User teacher = userRepository.findById(lessonDto.getTeacherId())
                 .orElseThrow(() -> new BadRequestException("Teacher not found"));
 
         Course course = courseRepository.findById(lessonDto.getCourseId())
-                .orElseThrow(() -> new EntityNotFoundException("Course not found"));
+                .orElseThrow(() -> new BadRequestException("Course not found"));
 
         // If teacher isn't associated with course, add them
         if (!course.getTeachers().contains(teacher)) {
@@ -107,7 +101,7 @@ public class LessonServiceImpl implements LessonService {
     @Override
     public void deleteLesson(Long id) {
         if (!lessonRepository.existsById(id)) {
-            throw new EntityNotFoundException("Lesson not found");
+            throw new BadRequestException("Lesson not found");
         }
         lessonRepository.deleteById(id);
     }

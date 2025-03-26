@@ -1,10 +1,6 @@
 package com.ader.RestApi.service;
 
 import java.util.List;
-import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.ader.RestApi.dto.LessonDto;
 import com.ader.RestApi.exception.BadRequestException;
@@ -14,36 +10,39 @@ import com.ader.RestApi.pojo.User;
 import com.ader.RestApi.repositories.LessonRepository;
 import com.ader.RestApi.repositories.CourseRepository;
 import com.ader.RestApi.repositories.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class LessonServiceImpl implements LessonService {
 
     private final LessonRepository lessonRepository;
     private final UserRepository userRepository;
     private final CourseRepository courseRepository;
 
-    @Autowired
-    public LessonServiceImpl(LessonRepository lessonRepository, UserRepository userRepository,
-            CourseRepository courseRepository) {
-        this.lessonRepository = lessonRepository;
-        this.userRepository = userRepository;
-        this.courseRepository = courseRepository;
-    }
-
-    @Override
-    public Page<Lesson> getAllLessons(Pageable pageable) {
-        return lessonRepository.findAll(pageable);
-    }
-
     @Override
     public Lesson createLesson(LessonDto lessonDto) {
+        // Validate times
+        if (lessonDto.getStartTime().isAfter(lessonDto.getEndTime())) {
+            throw new BadRequestException("Start time must be before end time");
+        }
+
         User teacher = userRepository.findById(lessonDto.getTeacherId())
-                .orElseThrow(() -> new EntityNotFoundException("Teacher not found"));
+                .orElseThrow(() -> new BadRequestException("Teacher not found"));
 
         Course course = courseRepository.findById(lessonDto.getCourseId())
-                .orElseThrow(() -> new EntityNotFoundException("Course not found"));
+                .orElseThrow(() -> new BadRequestException("Course not found"));
+
+        // If teacher isn't associated with course, add them
+        if (!course.getTeachers().contains(teacher)) {
+            course.getTeachers().add(teacher);
+            teacher.getTaughtCourses().add(course);
+        }
+
+        // Check time conflicts
+        checkTimeConflicts(course, null, lessonDto.getDayOfWeek(), lessonDto.getStartTime(), lessonDto.getEndTime());
 
         Lesson lesson = new Lesson();
         lesson.setStartTime(lessonDto.getStartTime());
@@ -52,25 +51,27 @@ public class LessonServiceImpl implements LessonService {
         lesson.setTeacher(teacher);
         lesson.setCourse(course);
 
+        // Add lesson to course's lessons collection
+        course.getLessons().add(lesson);
+
         return lessonRepository.save(lesson);
     }
 
     @Override
-    public Optional<Lesson> getLessonById(Long id) {
-        return lessonRepository.findById(id);
-    }
-
-    @Override
-    @Transactional
     public Lesson updateLesson(LessonDto lessonDto, Long lessonId) {
+        // Validate times
+        if (lessonDto.getStartTime().isAfter(lessonDto.getEndTime())) {
+            throw new BadRequestException("Start time must be before end time");
+        }
+
         Lesson lesson = lessonRepository.findById(lessonId)
-                .orElseThrow(() -> new EntityNotFoundException("Lesson not found"));
+                .orElseThrow(() -> new BadRequestException("Lesson not found"));
 
         User teacher = userRepository.findById(lessonDto.getTeacherId())
                 .orElseThrow(() -> new BadRequestException("Teacher not found"));
 
         Course course = courseRepository.findById(lessonDto.getCourseId())
-                .orElseThrow(() -> new EntityNotFoundException("Course not found"));
+                .orElseThrow(() -> new BadRequestException("Course not found"));
 
         // If teacher isn't associated with course, add them
         if (!course.getTeachers().contains(teacher)) {
@@ -78,20 +79,14 @@ public class LessonServiceImpl implements LessonService {
             teacher.getTaughtCourses().add(course);
         }
 
-        // Check time conflicts with other lessons in the course
-        boolean hasConflict = course.getLessons().stream()
-                .filter(existingLesson -> !existingLesson.getLessonId().equals(lessonId)) // Exclude current lesson
-                .anyMatch(existingLesson -> existingLesson.getDayOfWeek().equals(lessonDto.getDayOfWeek()) &&
-                        (lessonDto.getStartTime().isBefore(existingLesson.getEndTime()) &&
-                                lessonDto.getEndTime().isAfter(existingLesson.getStartTime())));
-
-        if (hasConflict) {
-            throw new BadRequestException("Time conflict with existing lesson in the course");
-        }
+        // Check time conflicts
+        checkTimeConflicts(course, lessonId, lessonDto.getDayOfWeek(), lessonDto.getStartTime(),
+                lessonDto.getEndTime());
 
         // Remove from old course if changing courses
         if (!lesson.getCourse().getCourseId().equals(course.getCourseId())) {
             lesson.getCourse().getLessons().remove(lesson);
+            course.getLessons().add(lesson);
         }
 
         lesson.setStartTime(lessonDto.getStartTime());
@@ -99,16 +94,18 @@ public class LessonServiceImpl implements LessonService {
         lesson.setDayOfWeek(lessonDto.getDayOfWeek());
         lesson.setTeacher(teacher);
         lesson.setCourse(course);
-        course.getLessons().add(lesson);
 
         return lessonRepository.save(lesson);
     }
 
     @Override
     public void deleteLesson(Long id) {
-        if (!lessonRepository.existsById(id)) {
-            throw new EntityNotFoundException("Lesson not found");
-        }
+        Lesson lesson = lessonRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("Lesson not found"));
+
+        // Remove lesson from course's collection
+        lesson.getCourse().getLessons().remove(lesson);
+
         lessonRepository.deleteById(id);
     }
 
@@ -118,5 +115,24 @@ public class LessonServiceImpl implements LessonService {
             throw new BadRequestException("Course not found with id: " + courseId);
         }
         return lessonRepository.findByCourse_CourseId(courseId);
+    }
+
+    // This method checks for time conflicts in a course
+    private void checkTimeConflicts(Course course, Long lessonId, String dayOfWeek, java.time.LocalTime startTime,
+            java.time.LocalTime endTime) {
+        // Filter the lessons in the course
+        boolean hasConflict = course.getLessons().stream()
+                // Exclude the current lesson if it's being updated
+                .filter(existingLesson -> lessonId == null ||
+                        !existingLesson.getLessonId().equals(lessonId))
+                // Check if there's a lesson with the same day of week and overlapping time
+                .anyMatch(existingLesson -> existingLesson.getDayOfWeek().equals(dayOfWeek) &&
+                        (startTime.isBefore(existingLesson.getEndTime())
+                                && endTime.isAfter(existingLesson.getStartTime())));
+
+        // If there's a conflict, throw a BadRequestException
+        if (hasConflict) {
+            throw new BadRequestException("Time conflict with existing lesson in the course");
+        }
     }
 }

@@ -1,12 +1,8 @@
 package com.ader.RestApi.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,26 +16,21 @@ import com.ader.RestApi.repositories.CourseRepository;
 import com.ader.RestApi.repositories.LessonRepository;
 import com.ader.RestApi.repositories.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final LessonRepository lessonRepository;
 
-    public CourseServiceImpl(CourseRepository courseRepository, LessonRepository lessonRepository,
-            UserRepository userRepository) {
-        this.courseRepository = courseRepository;
-        this.lessonRepository = lessonRepository;
-        this.userRepository = userRepository;
-    }
-
-    /*  ---------------------------------      Managing Courses      ---------------------------------  */
-    @Override
-    public Page<Course> getAllCourses(Pageable pageable) {
-        return courseRepository.findAll(pageable);
-    }
+    /*
+     * --------------------------------- Managing Courses
+     * ---------------------------------
+     */
 
     @Override
     public Course createCourse(Course course) {
@@ -90,12 +81,6 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Optional<Course> getCourseById(Long id) {
-        return courseRepository.findById(id);
-    }
-
-    @Override
-    @Transactional
     public Course updateCourse(Course course) {
         Course existingCourse = courseRepository.findById(course.getCourseId())
                 .orElseThrow(() -> new BadRequestException("Course not found"));
@@ -139,7 +124,10 @@ public class CourseServiceImpl implements CourseService {
         courseRepository.deleteById(id);
     }
 
-    /*  ---------------------------------      Managing course Lessons      --------------------------------- */
+    /*
+     * --------------------------------- Managing course Lessons
+     * ---------------------------------
+     */
     @Override
     public Lesson addLessonToCourse(LessonDto lessonDto) {
         Course course = courseRepository.findById(lessonDto.getCourseId())
@@ -169,6 +157,7 @@ public class CourseServiceImpl implements CourseService {
         }
         return lessonRepository.findByCourse_CourseId(courseId);
     }
+
     // This method updates a lesson by course
     @Override
     public Lesson updateLessonByCourse(Long lessonId, LessonDto lessonDto) {
@@ -233,7 +222,10 @@ public class CourseServiceImpl implements CourseService {
         lessonRepository.delete(lesson);
     }
 
-    /*  ---------------------------------      Managing course Students      --------------------------------- */   
+    /*
+     * --------------------------------- Managing course Students
+     * ---------------------------------
+     */
     @Override
     public User addStudentToCourse(Long studentId, Long courseId) {
         // Fetch the course to which the student will be added
@@ -251,6 +243,9 @@ public class CourseServiceImpl implements CourseService {
 
         // Add the student to the course
         course.getStudents().add(student);
+        // Update the other side of the relationship
+        student.getEnrolledCourses().add(course);
+        
         courseRepository.save(course);
         return student;
     }
@@ -275,10 +270,16 @@ public class CourseServiceImpl implements CourseService {
 
         // Remove the student from the course
         course.getStudents().remove(student);
+        // Update the other side of the relationship
+        student.getEnrolledCourses().remove(course);
+        
         courseRepository.save(course);
     }
 
-    /*  ---------------------------------      Managing course Teachers      --------------------------------- */
+    /*
+     * --------------------------------- Managing course Teachers
+     * ---------------------------------
+     */
     @Override
     public User addTeacherToCourse(Long teacherId, Long courseId) {
         // Fetch the course to which the teacher will be added
@@ -296,6 +297,9 @@ public class CourseServiceImpl implements CourseService {
 
         // Add the teacher to the course
         course.getTeachers().add(teacher);
+        // Update the other side of the relationship
+        teacher.getTaughtCourses().add(course);
+        
         courseRepository.save(course);
         return teacher;
     }
@@ -320,6 +324,9 @@ public class CourseServiceImpl implements CourseService {
 
         // Remove the teacher from the course
         course.getTeachers().remove(teacher);
+        // Update the other side of the relationship
+        teacher.getTaughtCourses().remove(course);
+        
         courseRepository.save(course);
     }
 

@@ -74,6 +74,23 @@ Summary
 and it is a framework within the spring ecosystem dedicated to handle the communication between the objects model and the relational databases schema through object-relational-mapping
 uses hibernate as its default jpa implementation
 
+@Transactional
+it ensures that the entire method executes within a single database transaction.
+Here's why it's important for specific methods:
+For createLesson: The transaction ensures that all operations happen atomically:
+    Finding the teacher and course
+    Updating the teacher-course relationship
+    Creating the lesson
+    Adding the lesson to the course
+For updateLesson: The transaction ensures consistency when:
+    Updating relationships between entities
+    Changing course associations
+    Modifying lesson properties
+For deleteLesson: The transaction ensures that:
+    The lesson is removed from the course's collection
+    The lesson is deleted from the database
+If any part of these operations fails, the entire transaction is rolled back, preventing partial updates that could leave your database in an inconsistent state.
+
                                 /******************************************************************** Prevent malicious attacks **********************************************************************\
 
 1. HTTPS (Baseline Protection)

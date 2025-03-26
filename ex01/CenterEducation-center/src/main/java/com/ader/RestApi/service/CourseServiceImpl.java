@@ -20,20 +20,16 @@ import com.ader.RestApi.repositories.CourseRepository;
 import com.ader.RestApi.repositories.LessonRepository;
 import com.ader.RestApi.repositories.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final LessonRepository lessonRepository;
-
-    public CourseServiceImpl(CourseRepository courseRepository, LessonRepository lessonRepository,
-            UserRepository userRepository) {
-        this.courseRepository = courseRepository;
-        this.lessonRepository = lessonRepository;
-        this.userRepository = userRepository;
-    }
 
     /*  ---------------------------------      Managing Courses      ---------------------------------  */
     @Override

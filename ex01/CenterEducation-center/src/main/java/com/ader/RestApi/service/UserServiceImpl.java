@@ -3,11 +3,10 @@ package com.ader.RestApi.service;
 import com.ader.RestApi.exception.BadRequestException;
 import com.ader.RestApi.pojo.Course;
 import com.ader.RestApi.pojo.User;
-import com.ader.RestApi.repositories.LessonRepository;
 import com.ader.RestApi.repositories.UserRepository;
 
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,12 +16,11 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final LessonRepository lessonRepository;
 
     @Override
     public Page<User> getAllUsers(Pageable pageable) {

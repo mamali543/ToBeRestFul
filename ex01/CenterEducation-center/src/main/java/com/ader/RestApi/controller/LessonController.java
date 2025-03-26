@@ -11,11 +11,11 @@ import com.ader.RestApi.pojo.Lesson;
 import com.ader.RestApi.service.LessonService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/lessons")
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Tag(name = "Lesson Controller", description = "Endpoints for managing lessons")
 public class LessonController {
     private final LessonService lessonService;

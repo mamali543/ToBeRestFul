@@ -11,8 +11,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
-@RepositoryRestController
 @RequestMapping("/users")
+@RepositoryRestController
 @RequiredArgsConstructor
 @Tag(name = "User Controller", description = "Endpoints for managing users")
 public class UserController {

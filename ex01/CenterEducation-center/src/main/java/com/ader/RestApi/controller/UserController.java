@@ -1,7 +1,7 @@
 package com.ader.RestApi.controller;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;         
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -20,16 +20,18 @@ import com.ader.RestApi.pojo.User;
 import com.ader.RestApi.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/users")
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Tag(name = "User Controller", description = "Endpoints for managing users")
 public class UserController {
 
     private final UserService userService;
 
-    // The @PreAuthorize annotations method level security work with the role information stored in your JWT token
+    // The @PreAuthorize annotations method level security work with the role
+    // information stored in your JWT token
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get all users")

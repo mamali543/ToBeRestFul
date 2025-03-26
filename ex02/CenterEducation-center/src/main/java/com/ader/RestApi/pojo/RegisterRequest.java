@@ -1,13 +1,13 @@
 package com.ader.RestApi.pojo;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
+@RequiredArgsConstructor
 @NoArgsConstructor
 public class RegisterRequest {
     private String firstName;

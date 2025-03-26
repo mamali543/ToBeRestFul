@@ -15,19 +15,4 @@ import com.ader.RestApi.pojo.Lesson;
 //@Configuration: Tells Spring this is a configuration class that provides beans to the application context
 public class RestConfig {
 
-    @Bean
-    public RepositoryRestConfigurer repositoryRestConfigurer() {
-        //RepositoryRestConfigurer is an interface that allows you to customize Spring Data REST's behavior.
-        return new RepositoryRestConfigurer() {
-            @Override
-            public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
-                // Expose IDs for these entities in REST responses
-                config.exposeIdsFor(User.class, Course.class, Lesson.class);
-                
-                // Set base path for REST API (optional)
-                //This configures all Spring Data REST endpoints to be prefixed with /api
-                config.setBasePath("/api");
-            }
-        };
-    }
 } 

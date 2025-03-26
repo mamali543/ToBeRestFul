@@ -2,9 +2,7 @@ package com.ader.RestApi.pojo;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -29,7 +27,8 @@ import java.util.List;
 public class User implements UserDetails {
 
     @Id // Marks this field as the primary key of the entity
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-generates and increments values for this field using database identity and based on database architecture
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-generates and increments values for this field using
+                                                        // database identity and based on database architecture
                                                         // column
     @Column(name = "user_id") // Maps to the user_id column in the database table
     private Long userId; // Field to store the user's unique identifier

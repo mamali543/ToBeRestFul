@@ -3,11 +3,11 @@ package com.ader.RestApi.dto;
 import java.time.LocalTime;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class LessonDto {
     private Long lessonId;
     private LocalTime startTime;
