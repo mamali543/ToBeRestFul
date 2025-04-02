@@ -16,6 +16,7 @@
 
     <properties>
         <java.version>21</java.version>
+        <!-- <lombok.version>1.18.30</lombok.version> -->
     </properties>
     <dependencies>
         <!-- Existing dependencies -->
@@ -97,6 +98,47 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-rest</artifactId>
         </dependency>
+
+        <!-- Spring Data REST HAL Browser -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-hateoas</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-rest-webmvc</artifactId>
+        </dependency>
+
+        <!-- Spring REST Docs -->
+        <!-- <dependency>
+            <groupId>org.springframework.restdocs</groupId>
+            <artifactId>spring-restdocs-mockmvc</artifactId>
+            <scope>test</scope>
+        </dependency> -->
+
+        <!-- Optional: Spring REST Docs Asciidoctor for generating documentation -->
+        <!-- <dependency>
+            <groupId>org.springframework.restdocs</groupId>
+            <artifactId>spring-restdocs-asciidoctor</artifactId>
+            <scope>test</scope>
+        </dependency> -->
+
+
+        <!-- Spring Security Test -->
+        <!-- <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>provided</scope>
+        </dependency> -->
+
     </dependencies>
 
     <build>
@@ -118,6 +160,20 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+
+            <!-- Spring REST Docs Plugin -->
+            <!-- <plugin>
+                <groupId>org.springframework.restdocs</groupId>
+                <artifactId>spring-restdocs-maven-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin> -->
         </plugins>
     </build>
 </project>

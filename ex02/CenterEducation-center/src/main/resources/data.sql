@@ -39,19 +39,22 @@ INSERT INTO
         start_date,
         end_date,
         name,
-        description
+        description,
+        course_state
     )
 VALUES (
         '2024-01-01',
         '2024-01-05',
         'Course 1',
-        'Description 1'
+        'Description 1',
+        'Draft'
     ),
     (
         '2024-01-06',
         '2024-01-10',
         'Course 2',
-        'Description 2'
+        'Description 2',
+        'Draft'
     );
 -- Insert sample lessons
 INSERT INTO

@@ -117,6 +117,13 @@ public class LessonServiceImpl implements LessonService {
         return lessonRepository.findByCourse_CourseId(courseId);
     }
 
+    @Override
+    public List<Lesson> getLessonsByTeacherId(Long teacherId) {
+        User teacher = userRepository.findById(teacherId)
+                .orElseThrow(() -> new BadRequestException("Teacher not found"));
+        return teacher.getLessons();
+    }
+
     // This method checks for time conflicts in a course
     private void checkTimeConflicts(Course course, Long lessonId, String dayOfWeek, java.time.LocalTime startTime,
             java.time.LocalTime endTime) {

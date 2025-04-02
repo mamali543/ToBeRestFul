@@ -6,8 +6,11 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
+import com.ader.RestApi.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -52,15 +55,18 @@ public class User implements UserDetails {
     @JsonIgnore // Prevents infinite recursion when serializing to JSON
     @ManyToMany(mappedBy = "students") // Indicates this is the inverse side of the many-to-many relationship defined
                                        // in Course class
+    @RestResource(exported = false) // Prevent Spring Data REST from exposing this association
     private List<Course> enrolledCourses = new ArrayList<>(); // List of courses that this user (as a student) is
                                                               // enrolled in
 
     @JsonIgnore
     @ManyToMany(mappedBy = "teachers")
+    @RestResource(exported = false) // Prevent Spring Data REST from exposing this association
     private List<Course> taughtCourses = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.REMOVE)
+    @RestResource(exported = false) // Prevent Spring Data REST from exposing this association
     private List<Lesson> lessons = new ArrayList<>();
 
     // Spring Security methods

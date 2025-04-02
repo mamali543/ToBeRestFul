@@ -1,4 +1,4 @@
-package com.ader.RestApi.pojo;
+package com.ader.RestApi.enums;
 
 public enum Role {
     ADMINISTRATOR, TEACHER, STUDENT

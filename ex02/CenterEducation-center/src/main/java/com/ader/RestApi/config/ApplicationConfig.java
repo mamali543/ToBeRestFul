@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.http.HttpMethod;
 
 import com.ader.RestApi.pojo.Course;
 import com.ader.RestApi.pojo.Lesson;
@@ -56,17 +57,13 @@ public class ApplicationConfig {
     //rest configuration that configures SPRING DATA REST how to behave in our application
     @Bean
     public RepositoryRestConfigurer repositoryRestConfigurer() {
-        //RepositoryRestConfigurer is an interface that allows you to customize Spring Data REST's behavior.
-        return new RepositoryRestConfigurer() {
-            @Override
-            public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
-                // Expose IDs for these entities in REST responses
-                config.exposeIdsFor(User.class, Course.class, Lesson.class);
-                
-                // Set base path for REST API (optional)
-                //This configures all Spring Data REST endpoints to be prefixed with /api
-                // config.setBasePath("/api");
-            }
-        };
+        return RepositoryRestConfigurer.withConfig(config -> {
+            config.exposeIdsFor(User.class, Course.class, Lesson.class);
+            // Disable association links in the response
+            config.getExposureConfiguration()
+                .forDomainType(User.class)
+                .withAssociationExposure((metadata, httpMethods) -> 
+                    httpMethods.disable(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE));
+        });
     }
-}
+    }

@@ -14,27 +14,30 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RepositoryRestController
-@RequestMapping("/lessons")
+// @RequestMapping("/lessons")
 @RequiredArgsConstructor
 @Tag(name = "Lesson Controller", description = "Endpoints for managing lessons")
 public class LessonController {
     private final LessonService lessonService;
 
-    @PostMapping
+    @PostMapping("/courses/{courseId}/lessons")
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Create a new lesson")
-    public ResponseEntity<Lesson> createLesson(@RequestBody LessonDto lessonDto) {
+    public ResponseEntity<Lesson> createLesson(
+            @PathVariable Long courseId,
+            @RequestBody LessonDto lessonDto) {
+        lessonDto.setCourseId(courseId);
         return ResponseEntity.ok(lessonService.createLesson(lessonDto));
     }
 
-    @GetMapping("/course/{courseId}")
+    @GetMapping("/lessons/course/{courseId}")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get all lessons for a specific course")
     public ResponseEntity<List<Lesson>> getLessonsByCourseId(@PathVariable Long courseId) {
         return ResponseEntity.ok(lessonService.getLessonsByCourseId(courseId));
     }
 
-    @PutMapping("/{lessonId}")
+    @PutMapping("/lessons/{lessonId}")
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Update a lesson")
     public ResponseEntity<Lesson> updateLesson(
@@ -43,11 +46,18 @@ public class LessonController {
         return ResponseEntity.ok(lessonService.updateLesson(lessonDto, lessonId));
     }
 
-    @DeleteMapping("/{lessonId}")
+    @DeleteMapping("/lessons/{lessonId}")
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Delete a lesson")
     public ResponseEntity<Void> deleteLesson(@PathVariable Long lessonId) {
         lessonService.deleteLesson(lessonId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/teachers/{teacherId}/lessons")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Get lessons taught by a teacher")
+    public ResponseEntity<List<Lesson>> getLessonsByTeacherId(@PathVariable Long teacherId) {
+        return ResponseEntity.ok(lessonService.getLessonsByTeacherId(teacherId));
     }
 }

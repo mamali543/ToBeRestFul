@@ -12,11 +12,12 @@ import com.ader.RestApi.pojo.User;
 import com.ader.RestApi.service.CourseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
 
 @RepositoryRestController
-@RequestMapping("/courses")
+// @RequestMapping("/courses")
 @RequiredArgsConstructor
 @Tag(name = "Course Controller", description = "Endpoints for managing courses")
 public class CourseController {
@@ -24,20 +25,17 @@ public class CourseController {
     private final CourseService courseService;
 
     /*
-     * --------------------------------- Managing Courses
-     * ---------------------------------
-     */
+     * --------------------------------- Managing Courses * ---------------------------------*/
     // GET endpoints - accessible by all authenticated users
-
     // POST, PUT, DELETE endpoints - only for ADMINISTRATOR
-    @PostMapping
+    @PostMapping("/courses") // Create a new course
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Create a new course")
     public ResponseEntity<Course> createCourse(@Valid @RequestBody Course course) {
         return ResponseEntity.ok(courseService.createCourse(course));
     }
 
-    @PutMapping("/{courseId}")
+    @PutMapping("/courses/{courseId}") // Update a course
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Update a course")
     public ResponseEntity<Course> updateCourse(
@@ -47,7 +45,7 @@ public class CourseController {
         return ResponseEntity.ok(courseService.updateCourse(course));
     }
 
-    @DeleteMapping("/{courseId}")
+    @DeleteMapping("/courses/{courseId}") // Delete a course
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Delete a course")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long courseId) {
@@ -55,12 +53,18 @@ public class CourseController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/courses/{courseId}/publish") // Publish a draft course
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
+    @Operation(summary = "Publish a draft course")
+    public ResponseEntity<Course> publishCourse(@PathVariable Long courseId) {
+        Course publishedCourse = courseService.publishCourse(courseId);
+        return ResponseEntity.ok(publishedCourse);
+    }
+
     /*
-     * --------------------------------- Managing course Lessons
-     * ---------------------------------
-     */
+     * --------------------------------- Managing course Lessons * ---------------------------------*/
     // Lesson Management
-    @PostMapping("/{courseId}/lessons")
+    @PostMapping("/courses/{courseId}/add-lesson") // Add a lesson to a course
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Add a lesson to a course")
     public ResponseEntity<Lesson> addLessonToCourse(
@@ -70,14 +74,14 @@ public class CourseController {
         return ResponseEntity.ok(courseService.addLessonToCourse(lessonDto));
     }
 
-    @GetMapping("/{courseId}/lessons")
+    @GetMapping("/courses/{courseId}/lessons") // Get all lessons for a course
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get all lessons for a course")
     public ResponseEntity<List<Lesson>> getLessonsByCourseId(@PathVariable Long courseId) {
         return ResponseEntity.ok(courseService.getLessonsByCourseId(courseId));
     }
 
-    @PutMapping("/{courseId}/lessons/{lessonId}")
+    @PutMapping("/courses/{courseId}/lessons/{lessonId}") // Update a lesson in a course
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Update a lesson in a course")
     public ResponseEntity<Lesson> updateLessonInCourse(
@@ -88,7 +92,7 @@ public class CourseController {
         return ResponseEntity.ok(courseService.updateLessonByCourse(lessonId, lessonDto));
     }
 
-    @DeleteMapping("/{courseId}/lessons/{lessonId}")
+    @DeleteMapping("/courses/{courseId}/lessons/{lessonId}") // Delete a lesson from a course
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Delete a lesson from a course")
     public ResponseEntity<Void> deleteLessonFromCourse(
@@ -98,12 +102,10 @@ public class CourseController {
         return ResponseEntity.noContent().build();
     }
 
-    /*
-     * --------------------------------- Managing course Students
-     * ---------------------------------
-     */
+    /* 
+    * --------------------------------- Managing course Students * ---------------------------------*/
     // Student Management
-    @PostMapping("/{courseId}/students/{studentId}")
+    @PostMapping("/courses/{courseId}/students/{studentId}") // Add a student to a course
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Add a student to a course")
     public ResponseEntity<User> addStudentToCourse(
@@ -112,14 +114,14 @@ public class CourseController {
         return ResponseEntity.ok(courseService.addStudentToCourse(studentId, courseId));
     }
 
-    @GetMapping("/{courseId}/students")
+    @GetMapping("/courses/{courseId}/students") // Get all students in a course
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get all students in a course")
     public ResponseEntity<List<User>> getStudentsByCourseId(@PathVariable Long courseId) {
         return ResponseEntity.ok(courseService.getStudentsByCourseId(courseId));
     }
 
-    @DeleteMapping("/{courseId}/students/{studentId}")
+    @DeleteMapping("/courses/{courseId}/students/{studentId}") // Remove a student from a course
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Remove a student from a course")
     public ResponseEntity<Void> removeStudentFromCourse(
@@ -130,11 +132,9 @@ public class CourseController {
     }
 
     /*
-     * --------------------------------- Managing course Teachers
-     * ---------------------------------
-     */
+     * --------------------------------- Managing course Teachers * ---------------------------------*/
     // Teacher Management
-    @PostMapping("/{courseId}/teachers/{teacherId}")
+    @PostMapping("/courses/{courseId}/teachers/{teacherId}") // Add a teacher to a course
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Add a teacher to a course")
     public ResponseEntity<User> addTeacherToCourse(
@@ -143,14 +143,14 @@ public class CourseController {
         return ResponseEntity.ok(courseService.addTeacherToCourse(teacherId, courseId));
     }
 
-    @GetMapping("/{courseId}/teachers")
+    @GetMapping("/courses/{courseId}/teachers") // Get all teachers in a course
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get all teachers in a course")
     public ResponseEntity<List<User>> getTeachersByCourseId(@PathVariable Long courseId) {
         return ResponseEntity.ok(courseService.getTeachersByCourseId(courseId));
     }
 
-    @DeleteMapping("/{courseId}/teachers/{teacherId}")
+    @DeleteMapping("/courses/{courseId}/teachers/{teacherId}") // Remove a teacher from a course
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Remove a teacher from a course")
     public ResponseEntity<Void> removeTeacherFromCourse(
@@ -160,7 +160,21 @@ public class CourseController {
         return ResponseEntity.noContent().build();
     }
 
-    /* associate existing lesson with a course */
+    @GetMapping("/courses/student/{studentId}") // Get courses enrolled by a student
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Get courses enrolled by a student")
+    public ResponseEntity<List<Course>> getCoursesByStudentId(@PathVariable Long studentId) {
+        return ResponseEntity.ok(courseService.getCoursesByStudentId(studentId));
+    }
+
+    @GetMapping("/courses/teacher/{teacherId}") // Get courses taught by a teacher
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Get courses taught by a teacher")
+    public ResponseEntity<List<Course>> getTaughtCourses(@PathVariable Long teacherId) {
+        return ResponseEntity.ok(courseService.getCoursesByTeacherId(teacherId));
+    }
+
+        /* associate existing lesson with a course */
     // @PostMapping("/{courseId}/lessons/{lessonId}")
     // @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     // @Operation(summary = "Associate an existing lesson with a course")
@@ -170,5 +184,4 @@ public class CourseController {
     // return ResponseEntity.ok(courseService.associateLessonWithCourse(courseId,
     // lessonId));
     // }
-
 }

@@ -7,10 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ader.RestApi.dto.LessonDto;
+import com.ader.RestApi.enums.CourseState;
+import com.ader.RestApi.enums.Role;
 import com.ader.RestApi.exception.BadRequestException;
+// import com.ader.RestApi.exception.ResourceNotFoundException;
 import com.ader.RestApi.pojo.Course;
 import com.ader.RestApi.pojo.Lesson;
-import com.ader.RestApi.pojo.Role;
 import com.ader.RestApi.pojo.User;
 import com.ader.RestApi.repositories.CourseRepository;
 import com.ader.RestApi.repositories.LessonRepository;
@@ -28,9 +30,7 @@ public class CourseServiceImpl implements CourseService {
     private final LessonRepository lessonRepository;
 
     /*
-     * --------------------------------- Managing Courses
-     * ---------------------------------
-     */
+     * --------------------------------- Managing Courses * ---------------------------------*/
 
     @Override
     public Course createCourse(Course course) {
@@ -125,9 +125,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     /*
-     * --------------------------------- Managing course Lessons
-     * ---------------------------------
-     */
+     * --------------------------------- Managing course Lessons * ---------------------------------*/
     @Override
     public Lesson addLessonToCourse(LessonDto lessonDto) {
         Course course = courseRepository.findById(lessonDto.getCourseId())
@@ -223,9 +221,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     /*
-     * --------------------------------- Managing course Students
-     * ---------------------------------
-     */
+     * --------------------------------- Managing course Students * ---------------------------------*/
     @Override
     public User addStudentToCourse(Long studentId, Long courseId) {
         // Fetch the course to which the student will be added
@@ -277,9 +273,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     /*
-     * --------------------------------- Managing course Teachers
-     * ---------------------------------
-     */
+     * --------------------------------- Managing course Teachers * ---------------------------------*/
     @Override
     public User addTeacherToCourse(Long teacherId, Long courseId) {
         // Fetch the course to which the teacher will be added
@@ -330,22 +324,34 @@ public class CourseServiceImpl implements CourseService {
         courseRepository.save(course);
     }
 
-    // @Transactional
-    // public Lesson associateLessonWithCourse(Long courseId, Long lessonId) {
-    // Course course = courseRepository.findById(courseId)
-    // .orElseThrow(() -> new BadRequestException("Course not found"));
+    @Override
+    public List<Course> getCoursesByStudentId(Long studentId) {
+        User student = userRepository.findById(studentId)
+            .orElseThrow(() -> new BadRequestException("Student not found"));
+        return student.getEnrolledCourses();
+    }
 
-    // Lesson lesson = lessonRepository.findById(lessonId)
-    // .orElseThrow(() -> new BadRequestException("Lesson not found"));
+    @Override
+    public List<Course> getCoursesByTeacherId(Long teacherId) {
+        User teacher = userRepository.findById(teacherId)
+            .orElseThrow(() -> new BadRequestException("Teacher not found"));
+        return teacher.getTaughtCourses();
+    }
 
-    // // Check if lesson is already associated with another course
-    // if (lesson.getCourse() != null) {
-    // throw new BadRequestException("Lesson is already associated with a course");
-    // }
+    @Override
+    public Course publishCourse(Long courseId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new BadRequestException("Course not found"));
 
-    // lesson.setCourse(course);
-    // course.getLessons().add(lesson);
+        // Check if the course is in draft state
+        if (course.getCourseState() != CourseState.Draft) {
+            throw new BadRequestException("Only draft courses can be published");
+        }
 
-    // return lessonRepository.save(lesson);
-    // }
+        // Change the state to PUBLISHED
+        course.setCourseState(CourseState.Published);
+        
+        // Save the updated course
+        return courseRepository.save(course);
+    }
 }
