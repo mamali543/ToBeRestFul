@@ -93,7 +93,7 @@ public class LessonServiceImpl implements LessonService {
             System.out.println("Changing course for lesson: " + lesson.getLessonId());
 
             // Store the old course reference
-            Course oldCourse = lesson.getCourse();
+            // Course oldCourse = lesson.getCourse();
 
             // Set the new course
             lesson.setCourse(newCourse); // Set the new course
