@@ -10,7 +10,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import com.ader.RestApi.controller.CourseController;
 import com.ader.RestApi.controller.LessonController;
+import com.ader.RestApi.controller.UserController;
 import com.ader.RestApi.pojo.Lesson;
 
 @Component
@@ -21,15 +23,6 @@ public class LessonResourceProcessor implements RepresentationModelProcessor<Ent
         Lesson lesson = model.getContent();
         
         if (lesson != null) {
-            // Add self link
-            model.add(linkTo(methodOn(LessonController.class)
-                .getLessonsByCourseId(lesson.getCourse().getCourseId()))
-                .withRel("course-lessons"));
-                
-            model.add(linkTo(methodOn(LessonController.class)
-                .getLessonsByTeacherId(lesson.getTeacher().getUserId()))
-                .withRel("teacher-lessons"));
-            
             // Check if user is an administrator
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             boolean isAdmin = authentication != null && 
@@ -46,6 +39,9 @@ public class LessonResourceProcessor implements RepresentationModelProcessor<Ent
                     .deleteLesson(lesson.getLessonId()))
                     .withRel("delete"));
             }
+            
+            model.add(linkTo(UserController.class).slash(lesson.getTeacher().getUserId()).withRel("teacher"));
+            model.add(linkTo(CourseController.class).slash(lesson.getCourse().getCourseId()).withRel("course"));
         }
         
         return model;

@@ -26,41 +26,36 @@ public class UserResourceProcessor implements RepresentationModelProcessor<Entit
             // model.removeLinks();
 
             // Add role-specific links
-            // if (user.getRole() == Role.STUDENT) {
-            //     model.add(linkTo(methodOn(CourseController.class)
-            //         .getCoursesByStudentId(user.getUserId()))
-            //         .withRel("enrolledCourses"));
-            //         System.out.println(">>>>> did we get heeree ????? student Role");
-            // } 
+            if (user.getRole() == Role.STUDENT && user.getEnrolledCourses() != null && !user.getEnrolledCourses().isEmpty()) {
+                model.add(linkTo(methodOn(CourseController.class)
+                    .getCoursesByStudentId(user.getUserId()))
+                    .withRel("enrolledCourses"));
+            } 
             
-            // if (user.getRole() == Role.TEACHER) {
-            //     model.add(linkTo(methodOn(CourseController.class)
-            //         .getTaughtCourses(user.getUserId()))
-            //         .withRel("taughtCourses"));
-                    
-            //     model.add(linkTo(methodOn(LessonController.class)
-            //         .getLessonsByTeacherId(user.getUserId()))
-            //         .withRel("taughtLessons"));
-            // }
-            if (user.getRole() == Role.ADMINISTRATOR)
-                    System.out.println(">>>>> userResourceProcessor admin");
-            else if (user.getRole() == Role.TEACHER)
-                System.out.println(">>>>> userResourceProcessor teacher");
-            else if (user.getRole() == Role.STUDENT)
-                System.out.println(">>>>> userResourceProcessor student");
-            
+            if (user.getRole() == Role.TEACHER) {
+                if (user.getTaughtCourses() != null && !user.getTaughtCourses().isEmpty())
+                    model.add(linkTo(methodOn(CourseController.class)
+                        .getTaughtCourses(user.getUserId()))
+                        .withRel("taughtCourses"));
+
+            if (user.getLessons() != null && !user.getLessons().isEmpty())            
+                model.add(linkTo(methodOn(LessonController.class)
+                    .getLessonsByTeacherId(user.getUserId()))
+                    .withRel("taughtLessons"));
+            }
+
             // Add admin-specific links
-            // Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            // boolean isAdmin = authentication != null && 
-            //     authentication.getAuthorities().stream()
-            //         .anyMatch(auth -> auth.getAuthority().equals("ADMINISTRATOR"));
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            boolean isAdmin = authentication != null && 
+                authentication.getAuthorities().stream()
+                    .anyMatch(auth -> auth.getAuthority().equals("ADMINISTRATOR"));
             
-            // if (isAdmin) {
-            //     model.add(linkTo(UserController.class).slash("users").slash(user.getUserId()).withRel("update"));
-            //     model.add(linkTo(methodOn(UserController.class)
-            //         .deleteUser(user.getUserId()))
-            //         .withRel("delete"));
-            // }
+            if (isAdmin) {
+                model.add(linkTo(UserController.class).slash("users").slash(user.getUserId()).withRel("update"));
+                model.add(linkTo(methodOn(UserController.class)
+                    .deleteUser(user.getUserId()))
+                    .withRel("delete"));
+            }
         }
         
         return model;

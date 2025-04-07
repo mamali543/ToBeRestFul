@@ -11,17 +11,17 @@ INSERT INTO
         role
     )
 VALUES (
-        'John',
+        'John', -- 123456
         'Doe',
         'jdoe',
         '$2y$10$A1XWYkZT6Fa6JF2a0SLFmuXLKYOo/9qqpwoHbqf9pgtWcI8MW52pS',  -- Use BCrypt encoded password
         0
     ),
     (
-        'Jane',
+        'Jane', -- janejane
         'Smith',
         'jsmith',
-        '$2a$10$YourBCryptEncodedPasswordHere',  -- Use BCrypt encoded password
+        '$2y$10$cGsNxvVXuB7BC8Yu4Va7Qup5CS7qiYiyw3Wl.lDPJwSL9uo40S37W',  -- Use BCrypt encoded password
         1
     ),
     (

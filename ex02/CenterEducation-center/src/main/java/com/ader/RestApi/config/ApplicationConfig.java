@@ -2,7 +2,6 @@ package com.ader.RestApi.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -12,8 +11,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.http.HttpMethod;
 
 import com.ader.RestApi.pojo.Course;
 import com.ader.RestApi.pojo.Lesson;
@@ -60,10 +57,10 @@ public class ApplicationConfig {
         return RepositoryRestConfigurer.withConfig(config -> {
             config.exposeIdsFor(User.class, Course.class, Lesson.class);
             // Disable association links in the response
-            config.getExposureConfiguration()
-                .forDomainType(User.class)
-                .withAssociationExposure((metadata, httpMethods) -> 
-                    httpMethods.disable(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE));
+            // config.getExposureConfiguration()
+            //     .forDomainType(User.class)
+            //     .withAssociationExposure((metadata, httpMethods) -> 
+            //         httpMethods.disable(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE));
         });
     }
     }
