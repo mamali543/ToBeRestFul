@@ -58,6 +58,7 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
+    @Transactional
     public Lesson updateLesson(LessonDto lessonDto, Long lessonId) {
         // Validate times
         if (lessonDto.getStartTime().isAfter(lessonDto.getEndTime())) {
@@ -70,30 +71,45 @@ public class LessonServiceImpl implements LessonService {
         User teacher = userRepository.findById(lessonDto.getTeacherId())
                 .orElseThrow(() -> new BadRequestException("Teacher not found"));
 
-        Course course = courseRepository.findById(lessonDto.getCourseId())
+        Course newCourse = courseRepository.findById(lessonDto.getCourseId())
                 .orElseThrow(() -> new BadRequestException("Course not found"));
 
-        // If teacher isn't associated with course, add them
-        if (!course.getTeachers().contains(teacher)) {
-            course.getTeachers().add(teacher);
-            teacher.getTaughtCourses().add(course);
+        // Log current and new course IDs
+        System.out.println("Current Course ID: " + lesson.getCourse().getCourseId());
+        System.out.println("New Course ID: " + newCourse.getCourseId());
+
+        // If teacher isn't associated with the new course, add them
+        if (!newCourse.getTeachers().contains(teacher)) {
+            newCourse.getTeachers().add(teacher);
+            teacher.getTaughtCourses().add(newCourse);
         }
 
         // Check time conflicts
-        checkTimeConflicts(course, lessonId, lessonDto.getDayOfWeek(), lessonDto.getStartTime(),
+        checkTimeConflicts(newCourse, lessonId, lessonDto.getDayOfWeek(), lessonDto.getStartTime(),
                 lessonDto.getEndTime());
 
-        // Remove from old course if changing courses
-        if (!lesson.getCourse().getCourseId().equals(course.getCourseId())) {
-            lesson.getCourse().getLessons().remove(lesson);
-            course.getLessons().add(lesson);
+        // Change course if necessary
+        if (!lesson.getCourse().getCourseId().equals(newCourse.getCourseId())) {
+            System.out.println("Changing course for lesson: " + lesson.getLessonId());
+
+            // Store the old course reference
+            Course oldCourse = lesson.getCourse();
+
+            // Set the new course
+            lesson.setCourse(newCourse); // Set the new course
+
+            // Add to the new course's lessons
+            newCourse.getLessons().add(lesson); // Add to the new course's lessons
+
+            // Remove from the old course's lessons
+            // oldCourse.getLessons().remove(lesson); // Remove from the old course's lessons
         }
 
+        // Update lesson details
         lesson.setStartTime(lessonDto.getStartTime());
         lesson.setEndTime(lessonDto.getEndTime());
         lesson.setDayOfWeek(lessonDto.getDayOfWeek());
         lesson.setTeacher(teacher);
-        lesson.setCourse(course);
 
         return lessonRepository.save(lesson);
     }

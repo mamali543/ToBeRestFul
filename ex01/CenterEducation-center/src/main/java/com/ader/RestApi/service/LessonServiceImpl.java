@@ -85,7 +85,11 @@ public class LessonServiceImpl implements LessonService {
 
         // Remove from old course if changing courses
         if (!lesson.getCourse().getCourseId().equals(course.getCourseId())) {
-            lesson.getCourse().getLessons().remove(lesson);
+            // lesson.getCourse().getLessons().remove(lesson);
+            lesson.setCourse(course); // Set the new course
+
+            // Add to the new course's lessons
+            course.getLessons().add(lesson); // Add to the new course's lessons
         }
 
         lesson.setStartTime(lessonDto.getStartTime());

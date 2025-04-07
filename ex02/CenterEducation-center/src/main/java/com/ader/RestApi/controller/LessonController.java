@@ -20,30 +20,28 @@ import lombok.RequiredArgsConstructor;
 public class LessonController {
     private final LessonService lessonService;
 
-    @PostMapping("/courses/{courseId}/lessons")
+    @PostMapping("/lessons")
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Create a new lesson")
     public ResponseEntity<Lesson> createLesson(
-            @PathVariable Long courseId,
             @RequestBody LessonDto lessonDto) {
-        lessonDto.setCourseId(courseId);
-        return ResponseEntity.ok(lessonService.createLesson(lessonDto));
-    }
-
+                return ResponseEntity.ok(lessonService.createLesson(lessonDto));
+            }
+            
+            @PutMapping("/lessons/{lessonId}")
+            @PreAuthorize("hasAuthority('ADMINISTRATOR')")
+            @Operation(summary = "Update a lesson")
+            public ResponseEntity<Lesson> updateLesson(
+                @PathVariable Long lessonId,
+                @RequestBody LessonDto lessonDto) {
+                    // System.out.println("LessonController.updateLesson()" + "lessonDto.courseId: "+ lessonDto.getCourseId() );
+            return ResponseEntity.ok(lessonService.updateLesson(lessonDto, lessonId));
+        }
     @GetMapping("/lessons/course/{courseId}")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get all lessons for a specific course")
     public ResponseEntity<List<Lesson>> getLessonsByCourseId(@PathVariable Long courseId) {
         return ResponseEntity.ok(lessonService.getLessonsByCourseId(courseId));
-    }
-
-    @PutMapping("/lessons/{lessonId}")
-    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
-    @Operation(summary = "Update a lesson")
-    public ResponseEntity<Lesson> updateLesson(
-            @PathVariable Long lessonId,
-            @RequestBody LessonDto lessonDto) {
-        return ResponseEntity.ok(lessonService.updateLesson(lessonDto, lessonId));
     }
 
     @DeleteMapping("/lessons/{lessonId}")
