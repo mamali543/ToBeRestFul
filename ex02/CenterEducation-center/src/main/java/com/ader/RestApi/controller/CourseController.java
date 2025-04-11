@@ -25,7 +25,9 @@ public class CourseController {
     private final CourseService courseService;
 
     /*
-     * --------------------------------- Managing Courses * ---------------------------------*/
+     * --------------------------------- Managing Courses *
+     * ---------------------------------
+     */
     // GET endpoints - accessible by all authenticated users
     // POST, PUT, DELETE endpoints - only for ADMINISTRATOR
     @PostMapping("/courses") // Create a new course
@@ -57,12 +59,15 @@ public class CourseController {
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Publish a draft course")
     public ResponseEntity<Course> publishCourse(@PathVariable Long courseId) {
+        System.out.println("publish cOURSE METHOD CALLED <<<<<>>>>>>");
         Course publishedCourse = courseService.publishCourse(courseId);
         return ResponseEntity.ok(publishedCourse);
     }
 
     /*
-     * --------------------------------- Managing course Lessons * ---------------------------------*/
+     * --------------------------------- Managing course Lessons *
+     * ---------------------------------
+     */
     // Lesson Management
     @PostMapping("/courses/{courseId}/add-lesson") // Add a lesson to a course
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
@@ -102,8 +107,10 @@ public class CourseController {
         return ResponseEntity.noContent().build();
     }
 
-    /* 
-    * --------------------------------- Managing course Students * ---------------------------------*/
+    /*
+     * --------------------------------- Managing course Students *
+     * ---------------------------------
+     */
     // Student Management
     @PostMapping("/courses/{courseId}/students/{studentId}") // Add a student to a course
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
@@ -132,7 +139,9 @@ public class CourseController {
     }
 
     /*
-     * --------------------------------- Managing course Teachers * ---------------------------------*/
+     * --------------------------------- Managing course Teachers *
+     * ---------------------------------
+     */
     // Teacher Management
     @PostMapping("/courses/{courseId}/teachers/{teacherId}") // Add a teacher to a course
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
@@ -174,7 +183,7 @@ public class CourseController {
         return ResponseEntity.ok(courseService.getCoursesByTeacherId(teacherId));
     }
 
-        /* associate existing lesson with a course */
+    /* associate existing lesson with a course */
     // @PostMapping("/{courseId}/lessons/{lessonId}")
     // @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     // @Operation(summary = "Associate an existing lesson with a course")

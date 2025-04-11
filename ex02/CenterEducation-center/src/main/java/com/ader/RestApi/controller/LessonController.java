@@ -23,20 +23,17 @@ public class LessonController {
     @PostMapping("/lessons")
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @Operation(summary = "Create a new lesson")
-    public ResponseEntity<Lesson> createLesson(
-            @RequestBody LessonDto lessonDto) {
-                return ResponseEntity.ok(lessonService.createLesson(lessonDto));
-            }
+    public ResponseEntity<Lesson> createLesson(@RequestBody LessonDto lessonDto) {
+        return ResponseEntity.ok(lessonService.createLesson(lessonDto));
+    }
             
-            @PutMapping("/lessons/{lessonId}")
-            @PreAuthorize("hasAuthority('ADMINISTRATOR')")
-            @Operation(summary = "Update a lesson")
-            public ResponseEntity<Lesson> updateLesson(
-                @PathVariable Long lessonId,
-                @RequestBody LessonDto lessonDto) {
-                    // System.out.println("LessonController.updateLesson()" + "lessonDto.courseId: "+ lessonDto.getCourseId() );
-            return ResponseEntity.ok(lessonService.updateLesson(lessonDto, lessonId));
-        }
+    @PutMapping("/lessons/{lessonId}")
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
+    @Operation(summary = "Update a lesson")
+    public ResponseEntity<Lesson> updateLesson(@PathVariable Long lessonId, @RequestBody LessonDto lessonDto) {
+        return ResponseEntity.ok(lessonService.updateLesson(lessonDto, lessonId));
+    }
+
     @GetMapping("/lessons/course/{courseId}")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get all lessons for a specific course")

@@ -208,3 +208,7 @@ When Spring serializes a response, it checks if there's a RepresentationModelPro
 If found (like your UserResourceProcessor), it calls the process method
 Your processor adds custom links based on the entity's state
 The resulting EntityModel with all its links is serialized to JSON
+
+
+The templated: true attribute in the hypermedia links indicates that the URL contains template variables (placeholders) that need to be replaced with actual values when making a request.
+This is a feature of HATEOAS (Hypermedia as the Engine of Application State) that allows clients to understand how to construct the URL for the request.

@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.ader.RestApi.controller.CourseController;
+import com.ader.RestApi.dto.LessonDto;
 import com.ader.RestApi.pojo.Course;
 import com.ader.RestApi.enums.CourseState;
 
@@ -25,19 +26,19 @@ public class CourseResourceProcessor implements RepresentationModelProcessor<Ent
         // Check if the course object is not null
         if (course != null) {
             // Add a link to the related lessons resource
-            model.add(linkTo(methodOn(CourseController.class)
-                .getLessonsByCourseId(course.getCourseId()))
-                .withRel("lessons"));
+            // model.add(linkTo(methodOn(CourseController.class)
+            //     .getLessonsByCourseId(course.getCourseId()))
+            //     .withRel("lessons"));
                 
-            // Add a link to the related students resource
-            model.add(linkTo(methodOn(CourseController.class)
-                .getStudentsByCourseId(course.getCourseId()))
-                .withRel("students"));
+            // // Add a link to the related students resource
+            // model.add(linkTo(methodOn(CourseController.class)
+            //     .getStudentsByCourseId(course.getCourseId()))
+            //     .withRel("students"));
                 
-            // Add a link to the related teachers resource
-            model.add(linkTo(methodOn(CourseController.class)
-                .getTeachersByCourseId(course.getCourseId()))
-                .withRel("teachers"));
+            // // Add a link to the related teachers resource
+            // model.add(linkTo(methodOn(CourseController.class)
+            //     .getTeachersByCourseId(course.getCourseId()))
+            //     .withRel("teachers"));
             
             // Check if the current user is an administrator
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -59,7 +60,7 @@ public class CourseResourceProcessor implements RepresentationModelProcessor<Ent
                 // Add a link to manage course components
                 // Add a link to add a lesson to the course
                 model.add(linkTo(methodOn(CourseController.class)
-                    .addLessonToCourse(course.getCourseId(), null))
+                    .addLessonToCourse(course.getCourseId(), new LessonDto(null, null, null, null, null, null)))
                     .withRel("add-lesson"));
                 
                 // Add a link to add a student to the course
