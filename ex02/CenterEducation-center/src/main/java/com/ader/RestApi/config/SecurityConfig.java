@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.config.Customizer;
 
 import com.ader.RestApi.security.JwtAuthenticationFilter;
 
@@ -32,8 +31,9 @@ public class SecurityConfig {
                                 .csrf(csrf -> csrf.disable())
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/auth/**").permitAll()
+                                                .requestMatchers("/explorer", "/explorer/**").permitAll()
                                                 .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**", "/v3/api-docs/**").permitAll()
-                                                .requestMatchers("/hal-browser/**").permitAll() // Allow access to HAL Browser
+                                                // .requestMatchers("/hal-browser/**").permitAll() 
                                                 // Optional: Add URL-based role restrictions, URL-based security in
                                                 // SecurityConfig
                                                 .requestMatchers(HttpMethod.GET, "/**").authenticated()
