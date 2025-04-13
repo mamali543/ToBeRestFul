@@ -212,3 +212,7 @@ The resulting EntityModel with all its links is serialized to JSON
 
 The templated: true attribute in the hypermedia links indicates that the URL contains template variables (placeholders) that need to be replaced with actual values when making a request.
 This is a feature of HATEOAS (Hypermedia as the Engine of Application State) that allows clients to understand how to construct the URL for the request.
+
+Spring REST Docs uses tests to generate accurate, up-to-date API documentation. By testing the endpoint, you ensure the documentation reflects the actual behavior
+(e.g., request format, response fields, HATEOAS links).
+

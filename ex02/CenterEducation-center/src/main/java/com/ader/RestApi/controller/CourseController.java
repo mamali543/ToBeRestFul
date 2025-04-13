@@ -2,6 +2,7 @@ package com.ader.RestApi.controller;
 
 import java.util.List;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -55,14 +56,15 @@ public class CourseController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/courses/{courseId}/publish") // Publish a draft course
-    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
-    @Operation(summary = "Publish a draft course")
-    public ResponseEntity<Course> publishCourse(@PathVariable Long courseId) {
-        System.out.println("publish cOURSE METHOD CALLED <<<<<>>>>>>");
-        Course publishedCourse = courseService.publishCourse(courseId);
-        return ResponseEntity.ok(publishedCourse);
-    }
+@PostMapping("/courses/{courseId}/publish")
+@PreAuthorize("hasAuthority('ADMINISTRATOR')")
+@Operation(summary = "Publish a draft course")
+public ResponseEntity<EntityModel<Course>> publishCourse(@PathVariable Long courseId) {
+    System.out.println("publish cOURSE METHOD CALLED <<<<<>>>>>>");
+    Course publishedCourse = courseService.publishCourse(courseId);
+    EntityModel<Course> courseModel = EntityModel.of(publishedCourse); // Processor will add links
+    return ResponseEntity.ok(courseModel);
+}
 
     /*
      * --------------------------------- Managing course Lessons *
