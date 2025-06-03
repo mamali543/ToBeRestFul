@@ -9,9 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.ader</groupId>
-    <artifactId>RestApi</artifactId>
+    <artifactId>CenterEducation-center</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>RestApi</name>
+    <packaging>war</packaging>
+    <name>CenterEducation-center</name>
     <description>Spring Boot Rest Api</description>
 
     <properties>
